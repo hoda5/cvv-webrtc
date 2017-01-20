@@ -1,6 +1,5 @@
 var erro = false;
-var webdriverio = require('webdriverio'),
-    By = webdriverio.by;
+var webdriverio = require('webdriverio');
 var options = {
     desiredCapabilities: {
         browserName: 'firefox',
@@ -38,15 +37,24 @@ var c = webdriverio
     .remote(options)
     .init()
     .url('http://localhost:5000/')
-    .click('#btnPSV')
+    .click('#btnOP')
+    .waitForExist(500)
+    .getTitle().then(function (title) {
+        console.log('V3')
+        if (title.indexOf('Exemplo WebRTC/AppCVV') == -1)
+            console.log('O titulo esta errado, na tela esta:' + title + ', porem deveria ser: Exemplo WebRTC/AppCVV');
+    })
+
 
 a.then(function () {
     return b.then(function () {
-        a.end();
-        b.end();
-        c.end();
-        if (erro)
-            process.exit(1)
+        return c.then(function(){
+            a.end();
+            b.end();
+            c.end();
+            if (erro)
+                process.exit(1)
+        })
     })
 })
 
