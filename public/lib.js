@@ -1,4 +1,9 @@
+
 var p = {};
+
+window.qs = function(s) {
+  return document.querySelector(s);
+}
 
 window.cvv = {
   boot: function () {
@@ -59,21 +64,26 @@ window.cvv = {
       })
     });
   },
-  loginVoluntario: function () {
+  loginVoluntario: function (nome) {
     p.loginVoluntario = new Promise(function (resolve, reject) {
       p.boot.then(function () {
-        debugger
-        if (firebase.auth().currentUser)
-          return;
-        firebase.auth().signInAnonymously().catch(trataErro).then(function (user) {
+        if (firebase.auth().currentUser) {
+          coloca_na_filaOP(firebase.auth().currentUser);
+        }
+        else
+          firebase.auth().signInAnonymously()
+            .then(coloca_na_filaOP)
+            .catch(trataErro);
+
+        function coloca_na_filaOP(user) {
           firebase.database().ref('filaVoluntario/' + user.uid).set({
-            "nome": "voluntario" + user.uid,
+            "nome": nome,
             "texto": true,
             "audio": true,
             "video": true
           });
           resolve(user.uid);
-        });
+        }
       })
     });
   },
