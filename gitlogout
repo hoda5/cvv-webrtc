@@ -1,0 +1,10 @@
+#!/bin/bash
+
+git config --global --unset-all user.name
+git config --global --unset-all user.email 
+git config --unset-all user.name
+git config --unset-all user.email 
+git config credential.helper 'cache --timeout=21600'
+git config --global push.default simple
+
+git credential-cache exit
