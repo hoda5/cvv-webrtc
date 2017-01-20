@@ -67,7 +67,7 @@
       justify-content: center;
     }
   @media screen and (min-width: 768px) {
-      #btnHome {
+      .btnHome {
         position: fixed;
         display: block;
         right: 0;
@@ -77,9 +77,16 @@
         z-index: 900;
       }
   }
-    .mdl-progress {
-      width: 100% !important
-    }
+  @media screen and (max-width: 767px) {
+      .btnHome {
+          display: flex;
+          box-sizing:border-box;
+          align-items: center;
+        }
+  }
+  .mdl-progress {
+      width: 100% !important;
+  }
   </style>
 </head>
 
@@ -126,11 +133,11 @@
             <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
           </div>
         </div>
+        <a href="/" class="btnHome mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">
+          Página inicial
+        </a>
       </div>
     </main>
-    <div>
-      <a href="/" id="btnHome" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">Página inicial</a>
-    </div>
     <footer class="demo-footer mdl-mini-footer">
       <div class="mdl-mini-footer--left-section">
         <ul class="mdl-mini-footer--link-list">
