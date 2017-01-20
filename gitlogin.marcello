@@ -1,0 +1,5 @@
+#!/bin/bash
+
+`dirname $0`/gitlogout
+
+bash `dirname $0`/gitlogin MarcelloVSilva mvnota10@gmail.com "MarcelloVSilva"
