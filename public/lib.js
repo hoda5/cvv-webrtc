@@ -29,6 +29,34 @@ window.cvv = {
       })
     });
   },
+  loginFacebook: function () {
+    p.loginFacebook = new Promise(function (resolve, reject) {
+      p.boot.then(function () {
+        var provider = new firebase.auth.FacebookAuthProvider();
+        window.cvv.signInWithPopup(resolve, reject, provider);
+      })
+    });
+  },
+  loginGoogle: function () {
+    p.loginGoogle = new Promise(function (resolve, reject) {
+      p.boot.then(function () {
+        var provider = new firebase.auth.GoogleAuthProvider();
+        window.cvv.signInWithPopup(resolve, reject, provider);
+      })
+    });
+  },
+  usuarioLogado: function () {
+    return p.boot.then(function () {
+      return firebase.auth().currentUser;
+    });
+  },
+  logout: function () {
+    return p.boot.then(function () {
+      firebase.auth().signOut().then(function () {
+
+      });
+    });
+  },
   canalOP: function (checkbox) {
     var canal = /checkbox\-(.*)$/g.exec(checkbox.id)[1];
     p.canalOP = new Promise(function (resolve, reject) {
@@ -54,3 +82,25 @@ function trataErro(error) {
     console.error(error);
   }
 }
+
+function signInWithPopup(resolve, reject, provider) {
+  firebase.auth().signInWithPopup(provider).then(function (result) {
+    // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+    var token = result.credential.accessToken;
+    // The signed-in user info.
+    var user = result.user;
+    window.location.href = "/logado.html";
+    resolve(user);
+    // ...
+  }).catch(function (error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    // The email of the user's account used.
+    var email = error.email;
+    // The firebase.auth.AuthCredential type that was used.
+    var credential = error.credential;
+    reject(errorMessage);
+    // ...
+  });
+},

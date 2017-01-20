@@ -134,34 +134,10 @@
       <div class="demo-container mdl-grid">
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
         <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
-          <h5>Acesso de voluntários</h5>
           <form name="formularioDeLoginVoluntarios" onsubmit="return false">
             <div class="mdl-grid">
-              <div class="mdl-cell mdl-cell--6-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <input class="mdl-textfield__input" type="text" id="loginVoluntario">
-                <label class="mdl-textfield__label" for="loginVoluntario">Login</label>
-              </div>
-              <div class="mdl-cell mdl-cell--6-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <input class="mdl-textfield__input" type="password" id="senhaVoluntario">
-                <label class="mdl-textfield__label" for="senhaVoluntario">Senha</label>
-              </div>
               <div class="botaoAcessar mdl-cell mdl-cell--6-col">
-                <button class="mdl-button mdl-js-button mdl-button--raised" >Acessar</button>
-              </div>
-              <br />
-              <br />
-              <br />
-              <div class="mdl-cell mdl-cell--12-col">
-                <div class="mdl-grid botoesRedesSociais">
-                  <div class="botaoAcessar mdl-cell mdl-cell--6-col">
-                    <button class="btnFacebook mdl-button mdl-js-button mdl-button--raised" onclick="cvv.loginFacebook()"><i class="fa fa-facebook-official" aria-hidden="true"></i> Login Facebook</button>
-                  </div>
-                  <br />
-                  <br />
-                  <div class="botaoAcessar mdl-cell mdl-cell--6-col">
-                    <button class="btnGoogle mdl-button mdl-js-button mdl-button--raised" onclick="cvv.loginGoogle()"><i class="fa fa-google-plus" aria-hidden="true"></i> Login Google</button>
-                  </div>
-                </div>
+                <button class="mdl-button mdl-js-button mdl-button--raised" onclick="cvv.logout().then( function() { window.location.href = '/login.html';})">Logout</button>
               </div>
             </div>
           </form>
@@ -181,7 +157,6 @@
   <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
   <script src="lib.js"></script>
-  <script>cvv.logout()</script>
 </body>
 
 </html>
