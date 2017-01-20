@@ -97,41 +97,72 @@
     <main class="demo-main mdl-layout__content">
       <div class="demo-container mdl-grid">
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
-        <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="padding: 0px 55px 15px 55px;height: 60%;">
-          <h3>Fulano da Silva</h3>
-          <p>
-            Posto: <b>Goiânia</b>
-          </p>
-          <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-            <div class="mdl-tabs__tab-bar">
-              <a href="#starks-panel" class="mdl-tabs__tab is-active">Agenda</a>
-              <a href="#lannisters-panel" class="mdl-tabs__tab">Anotações</a>
-              <a href="#targaryens-panel" class="mdl-tabs__tab">Observações</a>
+        <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="padding: 0px 55px 15px 55px;height: 100%;">
+          <div class="mdl-grid">
+            <div class="mdl-cell mdl-cell--6-col">
+              <h3>Fulano da Silva</h3>
+              <p>
+                Posto: <b>Goiânia</b>
+              </p>
             </div>
-            <div class="mdl-tabs__panel is-active" id="starks-panel">
-              <ul>
-                <li>Eddard</li>
-                <li>Catelyn</li>
-                <li>Robb</li>
-                <li>Sansa</li>
-                <li>Brandon</li>
-                <li>Arya</li>
-                <li>Rickon</li>
-              </ul>
+            <div class="mdl-cell mdl-cell--6-col">
+              <div>Informar disponibilidade</div>
             </div>
-            <div class="mdl-tabs__panel" id="lannisters-panel">
-              <ul>
-                <li>Tywin</li>
-                <li>Cersei</li>
-                <li>Jamie</li>
-                <li>Tyrion</li>
-              </ul>
+          </div>
+          <div class="mdl-grid" style="height: 35%;">
+            <div class="mdl-cell mdl-cell--12-col">
+              <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                <div class="mdl-tabs__tab-bar">
+                  <a href="#starks-panel" class="mdl-tabs__tab">Agenda</a>
+                  <a href="#lannisters-panel" class="mdl-tabs__tab is-active">Anotações</a>
+                  <a href="#targaryens-panel" class="mdl-tabs__tab">Alertas</a>
+                </div>
+                <div class="mdl-tabs__panel" id="starks-panel">
+                  <ul>
+                    <li>Quarta, 19h-21h reunião grupo 4</li>
+                    <li>Quinta, 15h-19h plantão</li>
+                    <li>Domingo, 18h-11h RGV</li>
+                  </ul>
+                </div>
+                <div class="mdl-tabs__panel is-active" id="lannisters-panel">
+                  <textarea style="width: 100%;height: 60%;resize: none;overflow: auto;">
+                    Entrar em contato com Ciclana
+                  </textarea>
+                </div>
+                <div class="mdl-tabs__panel" id="targaryens-panel">
+                  <ul>
+                    <li>10 mensagens não lidas</li>
+                    <li>2 faltas em reuniões de grupo</li>
+                    <li>0 faltas em RGV's</li>
+                  </ul>
+                </div>
+              </div>
             </div>
-            <div class="mdl-tabs__panel" id="targaryens-panel">
-              <ul>
-                <li>Viserys</li>
-                <li>Daenerys</li>
-              </ul>
+          </div>
+          <div class="mdl-grid" style="text-align: center;">
+            <div class="mdl-cell mdl-cell--12-col">
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+                Preciso de substituto
+              </button>
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+                Gestão de grupo
+              </button>
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+                Gestão regional
+              </button>
+            </div>
+          </div>
+          <div class="mdl-grid" style="text-align: center;">
+            <div class="mdl-cell mdl-cell--12-col">
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+                Atualizar meu cadastro
+              </button>
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+                Gestão de posto
+              </button>
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+                Gestão nacional
+              </button>
             </div>
           </div>
         </div>
