@@ -1,6 +1,4 @@
 
-var p = {};
-
 window.qs = function (s) {
   return document.querySelector(s);
 }
@@ -35,18 +33,22 @@ window.cvv = {
       });
     return p.boot;
   },
-  loginOP: function () {
-    p.loginOP = new Promise(function (resolve, reject) {
-      p.boot.then(function () {
-        if (firebase.auth().currentUser) {
-          coloca_na_filaOP(firebase.auth().currentUser);
-        }
-        else
-          firebase.auth().signInAnonymously()
-            .then(coloca_na_filaOP)
-            .catch(trataErro);
+  internal: { o: {}, v: {} },
+  OP: {
+    entrar: function () {
+      if (cvv.internal.o.uid)
+        return Promise.resolve(cvv.internal.o.uid);
+      return p.boot.then(function () {
+
+        if (firebase.auth().currentUser)
+          return coloca_na_filaOP(firebase.auth().currentUser);
+
+        return firebase.auth().signInAnonymously()
+          .then(coloca_na_filaOP)
+          .catch(trataErro);
 
         function coloca_na_filaOP(user) {
+          cvv.internal.o.uid = user.uid;
           firebase.database().ref('filaOP/' + user.uid).set({
             "texto": true,
             "audio": true,
@@ -55,27 +57,30 @@ window.cvv = {
           });
           resolve(user.uid);
         }
-      })
-    });
-  },
-  logout: function () {
-    return p.boot.then(function () {
-      firebase.auth().signOut().then(function () {
-
       });
-    });
+    },
+    sair: function () {
+      return p.boot.then(function () {
+        var uid = cvv.internal.o.uid;
+        delete cvv.internal.o.uid;
+        firebase.database().ref('filaOP/' + uid).remove().then(function () {
+          firebase.auth().signOut();
+        })
+      });
+    },
+    canal: function (checkbox) {
+      var canal = /checkbox\-(.*)$/g.exec(checkbox.id)[1];
+      p.canalOP = new Promise(function (resolve, reject) {
+        p.loginOP.then(function (uid) {
+          var u = {};
+          u[canal] = checkbox.checked;
+          firebase.database().ref('filaOP/' + uid).update(u);
+          resolve();
+        })
+      });
+    },
   },
-  canalOP: function (checkbox) {
-    var canal = /checkbox\-(.*)$/g.exec(checkbox.id)[1];
-    p.canalOP = new Promise(function (resolve, reject) {
-      p.loginOP.then(function (uid) {
-        var u = {};
-        u[canal] = checkbox.checked;
-        firebase.database().ref('filaOP/' + uid).update(u);
-        resolve();
-      })
-    });
-  },
+
   loginVoluntario: function (nome) {
     return p.boot.then(function () {
       return firebase.auth().signInAnonymously();
@@ -104,7 +109,7 @@ window.cvv = {
     });
   },
   retirarDisponibilidade: function (uid) {
-    firebase.database().ref('filaVoluntario').remove(uid);
+    return firebase.database().ref('filaVoluntario/' + uid).remove();
   }
 }
 cvv.boot();

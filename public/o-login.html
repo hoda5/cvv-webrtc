@@ -96,15 +96,15 @@
           <h5 class="esperaOP">Escolha como você quer falar com a gente</h5>
           <div id="canais">
             <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-audio">
-                <input type="checkbox" id="checkbox-audio" class="mdl-checkbox__input" checked onchange="cvv.canalOP(event.target)">
+                <input type="checkbox" id="checkbox-audio" class="mdl-checkbox__input" checked onchange="cvv.OP.canal(event.target)">
                 <span class="mdl-checkbox__label checkbox-audio">Quero ser atendido(a) por voz</span>
               </label>
             <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-texto">
-                <input type="checkbox" id="checkbox-texto" class="mdl-checkbox__input" checked onchange="cvv.canalOP(event.target)">
+                <input type="checkbox" id="checkbox-texto" class="mdl-checkbox__input" checked onchange="cvv.OP.canal(event.target)">
                 <span class="mdl-checkbox__label checkbox-texto">Quero ser atendido(a) por chat</span>
               </label>
             <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-video">
-                <input type="checkbox" id="checkbox-video" class="mdl-checkbox__input" checked onchange="cvv.canalOP(event.target)">
+                <input type="checkbox" id="checkbox-video" class="mdl-checkbox__input" checked onchange="cvv.OP.canal(event.target)">
                 <span class="mdl-checkbox__label checkbox-video">Quero ser atendido(a) por vídeo</span>
               </label>
           </div>
@@ -136,5 +136,8 @@
 <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
 <script src="lib.js"></script>
 <script>
-  cvv.loginOP();
+  cvv.OP.entrar();
+  window.addEventListener("beforeunload", function () {
+    cvv.OP.sair();
+  });
 </script>

@@ -102,7 +102,8 @@
             Esperando que a outra pessoa nos contacte.
             <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
           </div>
-          <a href="/v-home.html" class="btnHome mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">
+          <a href="#" class="btnHome mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast"
+            onclick="cvv.retirarDisponibilidade(firebase.auth().currentUser.uid).then( function() {location.href='/v-home.html'} )">
             Sair da fila
           </a>
         </div>
