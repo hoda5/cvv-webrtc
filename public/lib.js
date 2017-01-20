@@ -4,31 +4,36 @@ var p = {};
 window.qs = function (s) {
   return document.querySelector(s);
 }
+window.qsa = function (s) {
+  return document.querySelectorAll(s);
+}
 
 window.cvv = {
   boot: function () {
-    p.boot = new Promise(function (resolve, reject) {
-      var config = {
-        apiKey: "AIzaSyDfaFK-b45-NlueU--RNUYTRqJV9w2wzyg",
-        authDomain: "i-cvv-hoda5.firebaseapp.com",
-        databaseURL: "https://i-cvv-hoda5.firebaseio.com",
-        storageBucket: "i-cvv-hoda5.appspot.com",
-        messagingSenderId: "912825779427"
-      };
-      firebase.initializeApp(config);
+    if (!p.boot)
+      p.boot = new Promise(function (resolve, reject) {
+        var config = {
+          apiKey: "AIzaSyDfaFK-b45-NlueU--RNUYTRqJV9w2wzyg",
+          authDomain: "i-cvv-hoda5.firebaseapp.com",
+          databaseURL: "https://i-cvv-hoda5.firebaseio.com",
+          storageBucket: "i-cvv-hoda5.appspot.com",
+          messagingSenderId: "912825779427"
+        };
+        firebase.initializeApp(config);
 
-      var unsubscribe = firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
+        var unsubscribe = firebase.auth().onAuthStateChanged(function (user) {
+          if (user) {
+            resolve(user);
+            unsubscribe();
+          }
+        });
+
+        setTimeout(function () {
           resolve();
           unsubscribe();
-        }
+        }, 1000);
       });
-
-      setTimeout(function () {
-        resolve();
-        unsubscribe();
-      }, 1000);
-    });
+    return p.boot;
   },
   loginOP: function () {
     p.loginOP = new Promise(function (resolve, reject) {
@@ -73,31 +78,34 @@ window.cvv = {
   },
   loginVoluntario: function (nome) {
     return p.boot.then(function () {
-      if (firebase.auth().currentUser) {
-        return coloca_na_filaOP(firebase.auth().currentUser);
-      }
-      else
-        firebase.auth().signInAnonymously()
-          .then(coloca_na_filaOP)
-          .catch(trataErro);
+      return firebase.auth().signInAnonymously();
     })
   },
   loginFacebook: function () {
     return p.boot.then(function () {
-        return firebase.auth()
-          .signInWithPopup(new firebase.auth.FacebookAuthProvider())
-          .then(coloca_na_filaOP)
-          .catch(trataErro);
-      });
+      return firebase.auth()
+        .signInWithPopup(new firebase.auth.FacebookAuthProvider())
+    });
   },
   loginGoogle: function () {
     return p.boot.then(function () {
-        return firebase.auth()
-          .signInWithPopup(new firebase.auth.GoogleAuthProvider())
-          .then(coloca_na_filaOP)
-          .catch(trataErro);
-      });
+      return firebase.auth()
+        .signInWithPopup(new firebase.auth.GoogleAuthProvider())
+    });
   },
+  disponibilizarAtendimento: function () {
+    return p.boot.then(function (user) {
+      return firebase.database().ref('filaVoluntario/' + user.uid).set({
+        "nome": 'Voluntário Teste',
+        "texto": qs('#checkbox-texto').checked,
+        "audio": qs('#checkbox-audio').checked,
+        "video": qs('#checkbox-video').checked
+      });
+    });
+  },
+  retirarDisponibilidade: function (uid) {
+    firebase.database().ref('filaVoluntario').remove(uid);
+  }
 }
 cvv.boot();
 
@@ -113,13 +121,3 @@ function trataErro(error) {
   }
 }
 
-function coloca_na_filaOP(user) {
-  debugger
-  firebase.database().ref('filaVoluntario/' + user.uid).set({
-    "nome": user.name,
-    "texto": true,
-    "audio": true,
-    "video": true
-  });
-  return { uid: user.uid, nome: nome };
-}
