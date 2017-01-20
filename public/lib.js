@@ -24,25 +24,21 @@ window.cvv = {
             "video": true,
             "dhFila": new Date()
           });
-          resolve();
+          resolve(user.uid);
         });
       })
     });
   },
-  canalOP: function (texto, audio, video) {
-    // p.loginOP = new Promise(function (resolve, reject) {
-    //   p.boot.then(function () {
-    //     firebase.auth().signInAnonymously().catch(trataErro).then(function (user) {
-    //       firebase.database().ref('filaOP/' + user.uid).push({
-    //         "texto": true,
-    //         "audio": true,
-    //         "video": true,
-    //         "dhFila": new Date()
-    //       });
-    //       resolve();
-    //     });
-    //   })
-    // });
+  canalOP: function (checkbox) {
+    var canal = /checkbox\-(.*)$/g.exec(checkbox.id)[1];
+    p.canalOP = new Promise(function (resolve, reject) {
+      p.loginOP.then(function (uid) {
+        var u = {};
+        u[canal] = checkbox.checked;
+        firebase.database().ref('filaOP/' + uid).update(u);
+        resolve();
+      })
+    });
   }
 }
 cvv.boot();
