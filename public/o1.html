@@ -25,22 +25,22 @@
       background-color: #3F51B5;
       flex-shrink: 0;
     }
-    
+
     .demo-main {
       margin-top: -35vh;
       flex-shrink: 0;
     }
-    
+
     .demo-header .mdl-layout__header-row {
       padding-left: 40px;
     }
-    
+
     .demo-container {
       max-width: 1600px;
       width: calc(100% - 16px);
       margin: 0 auto;
     }
-    
+
     .demo-content {
       border-radius: 2px;
       padding: 80px 56px;
@@ -49,38 +49,36 @@
       flex-direction: column;
       justify-content: center;
     }
-    
+
     .demo-layout.is-small-screen .demo-content {
       padding: 40px 28px;
     }
-    
+
     .demo-content h5 {}
-    
+
     .demo-footer {
       padding-left: 40px;
     }
-    
+
     .demo-footer .mdl-mini-footer--link-list a {
       font-size: 13px;
     }
-    
     #canais {
-      display: flex;
       justify-content: center;
     }
-    
-    #canais > span {
-      margin: 15px;
-    }
-    
-    #btnHome {
-      position: fixed;
-      display: block;
-      right: 0;
-      bottom: 0;
-      margin-right: 40px;
-      margin-bottom: 40px;
-      z-index: 900;
+  @media screen and (min-width: 768px) {
+      #btnHome {
+        position: fixed;
+        display: block;
+        right: 0;
+        bottom: 0;
+        margin-right: 40px;
+        margin-bottom: 40px;
+        z-index: 900;
+      }
+  }
+    .mdl-progress {
+      width: 100% !important
     }
   </style>
 </head>
@@ -108,44 +106,41 @@
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
         <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
           <h5>Escolha como você quer falar com a gente</h5>
-          <span id="canais">
-            <span>
-              <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-chat">
-                <input type="checkbox" id="checkbox-chat" class="mdl-checkbox__input" checked>
-                <span class="mdl-checkbox__label">chat</span>
+          <div id="canais">
+            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-voz">
+                <input type="checkbox" id="checkbox-voz" class="mdl-checkbox__input" checked>
+                <span class="mdl-checkbox__label">Quero ser atendido(a) por voz</span>
               </label>
-            </span>
-            <span>
-              <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-audio">
-                <input type="checkbox" id="checkbox-audio" class="mdl-checkbox__input" checked>
-                <span class="mdl-checkbox__label">voz</span>
+            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-chat">
+                <input type="checkbox" id="checkbox-chat" class="mdl-checkbox__input">
+                <span class="mdl-checkbox__label">Quero ser atendido(a) por chat</span>
               </label>
-            </span>
-            <span>
-              <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-video">
-                <input type="checkbox" id="checkbox-video" class="mdl-checkbox__input" checked>
-                <span class="mdl-checkbox__label">video</span>
+            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-video">
+                <input type="checkbox" id="checkbox-video" class="mdl-checkbox__input">
+                <span class="mdl-checkbox__label">Quero ser atendido(a) por vídeo</span>
               </label>
-            </span>
-          </span>
-          <span id="procurando">
-            <hr />
-              Aguarde alguns instantes que um de nossos voluntários já vai te atender.
-            <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>               
-          </span>
+          </div>
+          <hr />
+          <div id="procurando">
+            Aguarde alguns instantes que um de nossos voluntários já vai te atender.
+            <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+          </div>
         </div>
       </div>
-      <footer class="demo-footer mdl-mini-footer">
-        <div class="mdl-mini-footer--left-section">
-          <ul class="mdl-mini-footer--link-list">
-            <li><a href="/ajuda.html">Ajuda</a></li>
-            <li><a href="/politica.html">Política de privacidade</a></li>
-          </ul>
-        </div>
-      </footer>
     </main>
+    <div>
+      <a href="/" id="btnHome" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">Página inicial</a>
+    </div>
+    <footer class="demo-footer mdl-mini-footer">
+      <div class="mdl-mini-footer--left-section">
+        <ul class="mdl-mini-footer--link-list">
+          <li><a href="/ajuda.html">Ajuda</a></li>
+          <li><a href="/politica.html">Política de privacidade</a></li>
+        </ul>
+      </div>
+    </footer>
   </div>
-  <a href="/" id="btnHome" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">Página inicial</a>
   <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 </body>
+
 </html>
