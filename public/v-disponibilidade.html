@@ -97,10 +97,26 @@
       <div class="demo-container mdl-grid">
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
         <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+          <h5>Informe por quais canais você está se disponibilizando a atender</h5>
+          <div id="canais">
+            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-audio">
+                <input type="checkbox" id="checkbox-audio" class="mdl-checkbox__input" checked>
+                <span class="mdl-checkbox__label">Voz</span>
+              </label>
+            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-texto">
+                <input type="checkbox" id="checkbox-texto" class="mdl-checkbox__input" checked>
+                <span class="mdl-checkbox__label">Chat</span>
+              </label>
+            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-video">
+                <input type="checkbox" id="checkbox-video" class="mdl-checkbox__input" checked>
+                <span class="mdl-checkbox__label">Vídeo</span>
+              </label>
+          </div>
           <hr />
-          <div id="procurando">
-            Esperando que a outra pessoa nos contacte.
-            <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+          <div>
+            <button class="mdl-button mdl-js-button mdl-button--raised"
+              onclick="event.target.setAttribute('disabled', true); cvv.disponibilizarAtendimento().then(function () { location.href = '/v-espera.html'})">
+              Disponibilizar atendimento</button>
           </div>
           <a href="/" class="btnHome mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">
             Página inicial
@@ -124,10 +140,3 @@
 
 <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
 <script src="lib.js"></script>
-<script>
-  document.addEventListener("unload", function () {
-    cvv.boot().then(function () {
-      cvv.retirarDisponibilidade(firebase.auth().currentUser.uid);
-    });
-  });
-</script>
