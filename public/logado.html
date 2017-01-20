@@ -18,51 +18,63 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-red.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
     .demo-ribbon {
-      width: 100%;
-      height: 40vh;
-      background-color: #3F51B5;
-      flex-shrink: 0;
+        width: 100%;
+        height: 40vh;
+        background-color: #3F51B5;
+        flex-shrink: 0;
     }
-    
+
     .demo-main {
-      margin-top: -35vh;
-      flex-shrink: 0;
+        margin-top: -35vh;
+        flex-shrink: 0;
     }
-    
+
     .demo-header .mdl-layout__header-row {
-      padding-left: 40px;
+        padding-left: 40px;
     }
-    
+
     .demo-container {
-      max-width: 1600px;
-      width: calc(100% - 16px);
-      margin: 0 auto;
+        max-width: 1600px;
+        width: calc(100% - 16px);
+        margin: 0 auto;
     }
-    
+
     .demo-content {
-      border-radius: 2px;
-      padding: 80px 56px;
-      margin-bottom: 80px;
+        border-radius: 2px;
+        padding: 80px 56px;
+        margin-bottom: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
-    
+
     .demo-layout.is-small-screen .demo-content {
-      padding: 40px 28px;
+        padding: 40px 28px;
     }
-    
-    .demo-content h3 {
-      margin-top: 48px;
+
+    .demo-content h5 {
+
     }
-    
+
     .demo-footer {
-      padding-left: 40px;
+        padding-left: 40px;
     }
-    
+
     .demo-footer .mdl-mini-footer--link-list a {
-      font-size: 13px;
+        font-size: 13px;
     }
-    
+
+      #canais {
+        display: flex;
+        justify-content: center;
+      }
+      #canais > span {
+        margin: 15px;
+      }
+
     #btnHome {
       position: fixed;
       display: block;
@@ -72,8 +84,34 @@
       margin-bottom: 40px;
       z-index: 900;
     }
-  </style>
+
+    [name="formularioDeLoginVoluntarios"] .mdl-grid .mdl-cell {
+        margin: 0 auto;
+    }
+    .botaoAcessar button {
+      width: 100%;
+    }
+    .botoesRedesSociais {
+        padding: 0;
+    }
+
+    .btnFacebook {
+        background-color: #3b5998;
+        color: #fff;
+    }
+    .btnFacebook:hover {
+        background-color: #5378c5;
+    }
+    .btnGoogle {
+        background-color: #dd4b39;
+        color: #fff;
+    }
+    .btnGoogle:hover {
+        background-color: #dc6c5e;
+    }
+    </style>
 </head>
+
 <body>
   <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
     <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
@@ -82,8 +120,8 @@
         <div class="mdl-layout-spacer"></div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
           <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
-            <i class="material-icons">search</i>
-          </label>
+                        <i class="material-icons">search</i>
+                    </label>
           <div class="mdl-textfield__expandable-holder">
             <input class="mdl-textfield__input" type="text" id="search">
             <label class="mdl-textfield__label" for="search">Enter your query...</label>
@@ -96,17 +134,13 @@
       <div class="demo-container mdl-grid">
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
         <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
-          <h3>Erro</h3>
-          <p>
-            A página informada não existe
-          </p>
-          <h5>
-            Porque estou vendo esse erro?
-          </h5>
-          <p>
-            Provavelmente porque você digitou o endereço errado. Mas não se preocupe, clique no botão abaixo e você retornará à página
-            inicial do CVV
-          </p>
+          <form name="formularioDeLoginVoluntarios" onsubmit="return false">
+            <div class="mdl-grid">
+              <div class="botaoAcessar mdl-cell mdl-cell--6-col">
+                <button class="mdl-button mdl-js-button mdl-button--raised" onclick="cvv.logout().then( function() { window.location.href = '/login.html';})">Logout</button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
       <footer class="demo-footer mdl-mini-footer">
@@ -121,5 +155,8 @@
   </div>
   <a href="/" id="btnHome" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">Página inicial</a>
   <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
+  <script src="lib.js"></script>
 </body>
+
 </html>

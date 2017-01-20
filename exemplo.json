@@ -1,0 +1,50 @@
+{
+  "filaOP": {
+    "0LYostaEa4bGNCUHPvPu1W3NK2K3": {
+      "uid": "",
+      "texto": true,
+      "audio": true,
+      "video": true,
+      "dhFila":""
+    },
+    "0g97cziGx3VkDqY9YUigN1baLbc2": {
+      "texto": true,
+      "audio": false,
+      "video": false,
+      "dhFila":""
+    }
+  },
+  "filaVoluntario": {
+    "1xwRJMSe2PYVATnZZNfR8tKNhLm1":{
+      "nome": "Fulano",
+      "texto": false,
+      "audio": false,
+      "video": true
+    },
+    "6KJjEY5hcFXDsKwVmYafLQUJMeF3": {
+      "nome": "Ciclana",
+      "texto": false,
+      "audio": true,
+      "video": false
+    }
+  },
+  "atendimento":[
+    {
+      "op": "SHxW6gJbCqgP3lQkFlkMWFreksm2",
+      "voluntario": "RsJ3qjFuMwNihpXUxaIY1f3remA3",
+      "canal": "texto",
+      "inicio": "",
+      "dhFila":""
+    }
+  ],
+  "historico":[
+    {
+      "voluntario": "RsJ3qjFuMwNihpXUxaIY1f3remA3",
+      "canal": "texto",
+      "inicio": "",
+      "fim": "",
+      "tipo": "",
+      "dhFila":""
+    }
+  ]
+}

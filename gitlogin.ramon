@@ -1,0 +1,5 @@
+#!/bin/bash
+
+`dirname $0`/gitlogout
+
+bash `dirname $0`/gitlogin ramonhenrique ramon_henrique34@hotmail.com "Ramon Henrique"
