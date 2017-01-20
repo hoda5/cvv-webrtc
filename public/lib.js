@@ -1,4 +1,9 @@
+
 var p = {};
+
+window.qs = function (s) {
+  return document.querySelector(s);
+}
 
 window.cvv = {
   boot: function () {
@@ -11,13 +16,32 @@ window.cvv = {
         messagingSenderId: "912825779427"
       };
       firebase.initializeApp(config);
-      resolve();
+
+      var unsubscribe = firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+          resolve();
+          unsubscribe();
+        }
+      });
+
+      setTimeout(function () {
+        resolve();
+        unsubscribe();
+      }, 1000);
     });
   },
   loginOP: function () {
     p.loginOP = new Promise(function (resolve, reject) {
       p.boot.then(function () {
-        firebase.auth().signInAnonymously().catch(trataErro).then(function (user) {
+        if (firebase.auth().currentUser) {
+          coloca_na_filaOP(firebase.auth().currentUser);
+        }
+        else
+          firebase.auth().signInAnonymously()
+            .then(coloca_na_filaOP)
+            .catch(trataErro);
+
+        function coloca_na_filaOP(user) {
           firebase.database().ref('filaOP/' + user.uid).set({
             "texto": true,
             "audio": true,
@@ -25,29 +49,8 @@ window.cvv = {
             "dhFila": new Date()
           });
           resolve(user.uid);
-        });
+        }
       })
-    });
-  },
-  loginFacebook: function () {
-    p.loginFacebook = new Promise(function (resolve, reject) {
-      p.boot.then(function () {
-        var provider = new firebase.auth.FacebookAuthProvider();
-        window.cvv.signInWithPopup(resolve, reject, provider);
-      })
-    });
-  },
-  loginGoogle: function () {
-    p.loginGoogle = new Promise(function (resolve, reject) {
-      p.boot.then(function () {
-        var provider = new firebase.auth.GoogleAuthProvider();
-        window.cvv.signInWithPopup(resolve, reject, provider);
-      })
-    });
-  },
-  usuarioLogado: function () {
-    return p.boot.then(function () {
-      return firebase.auth().currentUser;
     });
   },
   logout: function () {
@@ -67,7 +70,34 @@ window.cvv = {
         resolve();
       })
     });
-  }
+  },
+  loginVoluntario: function (nome) {
+    return p.boot.then(function () {
+      if (firebase.auth().currentUser) {
+        return coloca_na_filaOP(firebase.auth().currentUser);
+      }
+      else
+        firebase.auth().signInAnonymously()
+          .then(coloca_na_filaOP)
+          .catch(trataErro);
+    })
+  },
+  loginFacebook: function () {
+    return p.boot.then(function () {
+        return firebase.auth()
+          .signInWithPopup(new firebase.auth.FacebookAuthProvider())
+          .then(coloca_na_filaOP)
+          .catch(trataErro);
+      });
+  },
+  loginGoogle: function () {
+    return p.boot.then(function () {
+        return firebase.auth()
+          .signInWithPopup(new firebase.auth.GoogleAuthProvider())
+          .then(coloca_na_filaOP)
+          .catch(trataErro);
+      });
+  },
 }
 cvv.boot();
 
@@ -83,24 +113,13 @@ function trataErro(error) {
   }
 }
 
-function signInWithPopup(resolve, reject, provider) {
-  firebase.auth().signInWithPopup(provider).then(function (result) {
-    // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-    var token = result.credential.accessToken;
-    // The signed-in user info.
-    var user = result.user;
-    window.location.href = "/logado.html";
-    resolve(user);
-    // ...
-  }).catch(function (error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    // The email of the user's account used.
-    var email = error.email;
-    // The firebase.auth.AuthCredential type that was used.
-    var credential = error.credential;
-    reject(errorMessage);
-    // ...
+function coloca_na_filaOP(user) {
+  debugger
+  firebase.database().ref('filaVoluntario/' + user.uid).set({
+    "nome": user.name,
+    "texto": true,
+    "audio": true,
+    "video": true
   });
-},
+  return { uid: user.uid, nome: nome };
+}
