@@ -1,54 +1,62 @@
-
+var erro = false;
 var webdriverio = require('webdriverio');
-var aberto=[];
-process.on('exit', encerraTudo);
+var options = {
+    desiredCapabilities: {
+        browserName: 'firefox',
+    }
+};
+var options_iPhone = {
+    desiredCapabilities: {
+        browserName: 'chrome',
+        size: { width: 320, height: 568 }
+    }
+};
 
-describe('OP esperando atendimento', function() {
-    var op=ana();
-    it('Abre a página do CVV', function() {
-        return op.url('http://www.google.com');
+var a = webdriverio
+    .remote(options)
+    .init()
+    .url('http://localhost:5000/')
+    .setViewportSize({ width: 320, height: 568 }, false)
+    .getTitle().then(function (title) {
+        console.log('V1')
+        if (title.indexOf('Exemplo WebRTC/AppCVV') == -1)
+            console.log('O titulo esta errado, na tela esta:' + title + ', porem deveria ser: Exemplo WebRTC/AppCVV');
     })
-    it('Verifica o título', function(done) {
-       op.getTitle().then(function(title) {
-          console.log('Title was: ' + title);        
-          done;
-        });
+
+var b = webdriverio
+    .remote(options_iPhone)
+    .init()
+    .url('http://localhost:5000/')
+    .getTitle().then(function (title) {
+        console.log('V2')
+        if (title.indexOf('Exemplo WebRTC/AppCVV') == -1)
+            console.log('O titulo esta errado, na tela esta:' + title + ', porem deveria ser: Exemplo WebRTC/AppCVV');
     })
-    it('Esperar', function(done) {
-        setTimeout(done, 10);
-    })
-    it('Fechar o navegador', function() {
-        return encerra(r);
+
+a.then(function () {
+    return b.then(function () {
+        a.end();
+        b.end();
+        console.log('V3')
+        if (erro)
+            process.exit(1)
     })
 })
 
 
-function ana() {
-    var options = {
-        desiredCapabilities: {
-            browserName: 'chrome'
-        }
-    };
-    var r= webdriverio
-        .remote(options)    
-        .init();
-    aberto.push(r);
-    return r;
+
+// .remote(options_iPhone)
+// .init()
+// .url('http://localhost:5000/')
+// .getTitle().then(function(title) {
+//     if (title.indexOf('Exemplo WebRTC/AppCVV')== -1)
+//         console.log('O titulo esta errado, na tela esta:'+title+', porem deveria ser: Exemplo WebRTC/AppCVV');
+//     else console.log('V')
+// })
+// .end();
+
+
+function erro(str) {
+    console.log(str);
+    erro = true;
 }
-
-function encerra(r) {
-    var i=aberto.indexOf(r);
-    if (i>=0) aberto.splice(i,1);
-    try{
-        return r.end();
-    }
-    catch(e) {
-
-    }
-}
-
-function encerraTudo() {
-    while (aberto.length) 
-        encerra(aberto[0]);
-}
-
