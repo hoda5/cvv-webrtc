@@ -1,5 +1,4 @@
 
-
 const assert = require('chai').assert;
 const h = require('./h');
 

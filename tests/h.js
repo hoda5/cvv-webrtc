@@ -1,6 +1,7 @@
 const webdriverio = require('webdriverio');
 const Future = require('fibers/future');
 const Fiber = require('fibers');
+const assert = require('chai').assert;
 
 var pending = [];
 
@@ -20,8 +21,9 @@ var personas = {
 var test_result;
 
 module.exports = {
+  domain: 'http://localhost:5000/',
   run: function run(opts, test, callback) {
-    test_result=0;
+    test_result = 0;
     var browsers = [];
     opts.personas.forEach(function (p) {
       var options = personas[p].options;
@@ -46,37 +48,50 @@ module.exports = {
         callback();
       } catch (error) {
         callback(error);
-        test_result=1;
+        test_result = 1;
       }
       process.exit(test_result)
     }).run();
   }
 };
 
+var verboseResult = {
+  getTitle: true,
+  getText: true,
+  isVisible: true
+};
+
 function getAsyncCommandWrapper(opts, fn) {
   if (opts.commandName == 'endx')
     return function (arg1, arg2, arg3, arg4, arg5) {
-      if (opts.verbose) show(arguments);
+      if (opts.verbose) show_exec(opts, arguments);
       fn.call(this, arg1, arg2, arg3, arg4, arg5)
     };
   return function (arg1, arg2, arg3, arg4, arg5) {
-    if (!Fiber.current)
-      throw new Error('not in Fiber');
-    if (opts.verbose) show(arguments);
-    var r = Future.fromPromise(fn.call(this, arg1, arg2, arg3, arg4, arg5)).wait();
-    // if (r && typeof r.value !== 'undefined')
-    //   console.log('  result=', JSON.stringify(r.value));
-    return r;
+    if (opts.verbose) show_exec(opts, arguments);
+    try {
+      if (!Fiber.current)
+        throw new Error('not in Fiber');
+      var r = Future.fromPromise(fn.call(this, arg1, arg2, arg3, arg4, arg5)).wait();
+      if (opts.verbose && verboseResult[opts.commandName])
+        console.log('  result=', JSON.stringify(r));
+      return r;
+    }
+    catch (e) {
+      console.log(e);
+      throw e;
+    }
   }
-  function show(args) {
-    var str = [
-      opts.persona, '.', opts.commandName, '(',
-      Array.prototype.slice.call(args).map(function (a) {
-        return JSON.stringify(a);
-      }).join(', '),
-      ')'];
-    console.log(str.join(''));
-  }
+}
+
+function show_exec(opts, args) {
+  var str = [
+    opts.persona, '.', opts.commandName, '(',
+    Array.prototype.slice.call(args).map(function (a) {
+      return JSON.stringify(a);
+    }).join(', '),
+    ')'];
+  console.log(str.join(''));
 }
 
 function getWaitUntilCommandWrapper(opts, fn) {
@@ -122,8 +137,25 @@ function getBrowser(name, opts, options) {
     commandName: 'waitUntil'
   }, instance.waitUntil);
   instance.addCommand = function (name, code) {
-    instance[name] = code;
+    instance[name] = function(arg1, arg2, arg3, arg4, arg5) {
+      if (opts.verbose) show_exec({
+        persona: name,
+        verbose: opts.verbose,
+        commandName: name
+      }, arguments);
+      code.call(this, arg1, arg2, arg3, arg4, arg5)
+    }
   };
+
+  instance.addCommand("check_text", function (selector, expectedText) {
+    var text = this.getText(selector);
+    assert.equal(text, expectedText, 'getText("' + selector + '")');
+  });
+
+  instance.addCommand("check_visible", function (selector) {
+    if (!this.isVisible(selector))
+      assert.fail('isVisible("' + selector + '") failed');
+  });
 
   return instance;
 };

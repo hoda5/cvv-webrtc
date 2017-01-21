@@ -5,7 +5,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceRoot}/tests/testWD.js",
+      "program": "${workspaceRoot}/tests/testOP.js",
       "cwd": "${workspaceRoot}",
       "outFiles": [],
       "sourceMaps": true
