@@ -12,7 +12,7 @@ h.run(
     messias.url(h.domain + '/dashboard.html');
     messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
     ana.click('#btnOP')
-    ana.check_text('.esperaOP', 'Escolha como você quer falar com a gente')
+    ana.check_text({'.esperaOP': 'Escolha como você quer falar com a gente'})
     messias.check_dashboard([0, 0, 0, 0], [1, 1, 1, 0]);
     ana.check_text({
       '.checkbox-texto': 'Quero ser atendido(a) por chat',

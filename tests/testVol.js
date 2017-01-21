@@ -1,20 +1,48 @@
-var Fiber = require('fibers');
-var assert = require('assert');
 
-var webdriverio = require('webdriverio'), By = webdriverio.by;
-var options = {
-  desiredCapabilities: {
-    browserName: 'chrome',
-  }
-};
+const assert = require('chai').assert;
+const h = require('./h');
 
-Fiber(function () {
-  var browser = webdriverio.remote();
-  var sessionID = browser.init();
+h.run(
+  {
+    personas: ['maria', 'messias'],
+    verbose: true
+  },
+  function (maria, messias) {
+    maria.url(h.domain);
+    messias.url(h.domain + '/dashboard.html');
+    messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
+    maria.click('#btnVol')
+    maria.check_text({'.demo-content h5': 'Acesso de voluntários'})
+    messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
 
-  browser.url('/');
-  var title = browser.getTitle();
-  console.log(title)
-  assert.equal(title, 'WebdriverIO - Selenium 2.0 javascript bindings for nodejs');
+    maria.click('.btnPassword')
+    maria.wait_text({'.demo-content h3': 'Voluntário Teste'}, 5000)
+    messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
 
-}).run();
+    // ana.check_text({
+    //   '.checkbox-texto': 'Quero ser atendido(a) por chat',
+    //   '.checkbox-audio': 'Quero ser atendido(a) por voz',
+    //   '.checkbox-video': 'Quero ser atendido(a) por vídeo',
+    //   '#procurando': 'Aguarde alguns instantes que um de nossos voluntários já vai te atender.'
+    // });
+    // ana.click('.checkbox-texto');
+    // messias.check_dashboard([0, 0, 0, 0], [0, 1, 1, 0]);
+    // ana.click('.checkbox-audio');
+    // messias.check_dashboard([0, 0, 0, 0], [0, 0, 1, 0]);
+    // ana.click('.checkbox-texto');
+    // messias.check_dashboard([0, 0, 0, 0], [1, 0, 1, 0]);
+    // ana.click('.checkbox-video');
+    // messias.check_dashboard([0, 0, 0, 0], [1, 0, 0, 0]);
+    // ana.click('.checkbox-audio');
+    // messias.check_dashboard([0, 0, 0, 0], [1, 1, 0, 0]);
+    // ana.click('.checkbox-video');
+    // messias.check_dashboard([0, 0, 0, 0], [1, 1, 1, 0]);
+    // ana.click('.btnHome');
+    // messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
+  },
+  function (err) {
+    if (err)
+      console.log(err);
+    else
+      console.log('OK')
+  });

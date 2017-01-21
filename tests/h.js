@@ -13,7 +13,7 @@ var personas = {
       }
     },
     init: function (browser) {
-      browser.windowHandlePosition({x: 20, y: 0});
+      browser.windowHandlePosition({ x: 20, y: 0 });
       browser.setViewportSize({
         width: 320,
         height: 786
@@ -27,7 +27,21 @@ var personas = {
       }
     },
     init: function (browser) {
-      browser.windowHandlePosition({x: 350, y: 0});
+      browser.windowHandlePosition({ x: 350, y: 0 });
+      browser.setViewportSize({
+        width: 320,
+        height: 586
+      });
+    }
+  },
+  maria: {
+    options: {
+      desiredCapabilities: {
+        browserName: 'chrome'
+      }
+    },
+    init: function (browser) {
+      browser.windowHandlePosition({ x: 700, y: 0 });
       browser.setViewportSize({
         width: 320,
         height: 586
@@ -55,7 +69,7 @@ module.exports = {
       try {
         try {
           opts.personas.forEach(function (p, idx) {
-            var browser=browsers[idx];
+            var browser = browsers[idx];
             browser.init();
             personas[p].init(browser);
           })
@@ -166,18 +180,12 @@ function getBrowser(name, opts, options) {
     }
   };
 
-  instance.addCommand("check_text", function () {
+  instance.addCommand("check_text", function (texts) {
     var self = this;
-    var t;
-    if (arguments[1]) {
-      t = {};
-      t[arguments[0]] = arguments[1];
-    }
-    else t = arguments[0]
-    var k = Object.keys(t);
+    var k = Object.keys(texts);
     if (k.length == 0) assert.fail(arguments);
     k.forEach(function (selector) {
-      var expectedText = t[selector];
+      var expectedText = texts[selector];
       var text = self.getText(selector);
       assert.equal(text, expectedText, 'getText("' + selector + '")');
     })
@@ -193,13 +201,18 @@ function getBrowser(name, opts, options) {
         console.log('  ---- ' + name + '.wait_text');
       for (var i = 0; i < k.length; i++) {
         var selector = k[i];
-        var expectedText = texts[selector];
-        var text = self.getText(selector);
-        if (opts.verbose)
-          console.log('  expect=', JSON.stringify(expectedText));
-        if (text == expectedText) {
-          k.splice(i, 1);
-          i--;
+        try {
+          var expectedText = texts[selector];
+          var text = self.getText(selector);
+          if (opts.verbose)
+            console.log('  expect=', JSON.stringify(expectedText));
+          if (text == expectedText) {
+            k.splice(i, 1);
+            i--;
+          }
+        }
+        catch (e) {
+
         }
       }
       return k.length == 0;
