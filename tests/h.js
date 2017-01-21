@@ -2,6 +2,9 @@ const webdriverio = require('webdriverio');
 const Future = require('fibers/future');
 const Fiber = require('fibers');
 const assert = require('chai').assert;
+const fs = require('fs');
+const path = require('path');
+var fx = require('mkdir-recursive');
 
 var pending = [];
 
@@ -51,10 +54,40 @@ var personas = {
 };
 
 var test_result;
+var report_dir, report_screenshots_dir, report_name, report_func;
 
 module.exports = {
   domain: 'http://localhost:5000/',
   run: function run(opts, test, callback) {
+    var n = process.argv[1]
+      .replace(/\.js$/g, '').split(/[\/\\]/);
+    report_name = n[n.length - 1];
+    n[n.length - 1] = 'report';
+    report_dir = n.join('/');
+    report_screenshots_dir = report_dir + '/screenshots/' + report_name;
+    fx.rmdirSync(report_screenshots_dir);
+    fx.mkdirSync(report_screenshots_dir);
+
+    var report_index = report_dir + '/report_' + report_name + '.html';
+    var report_stream = fs.createWriteStream(report_index, {
+      flags: 'w',
+      defaultEncoding: 'utf8',
+      autoClose: true
+    });
+    report_stream.write('<html><body>');
+    report_func = function report_func(opts, args) {
+      var str = [
+        opts.persona, '.', opts.commandName, '(',
+        Array.prototype.slice.call(args).map(function (a) {
+          return JSON.stringify(a);
+        }).join(', '),
+        ')'].join('');
+      if (opts.verbose)
+        console.log(str);
+      report_stream.write(str);
+      report_stream.write('<br />\n');
+    }
+
     test_result = 0;
     var browsers = [];
     opts.personas.forEach(function (p) {
@@ -83,6 +116,10 @@ module.exports = {
         callback(error);
         test_result = 1;
       }
+      report_stream.write('</body></html>');
+      report_stream.close();
+      if (test_result)
+        fs.renameSync(report_index, report_index.replace('.html', '.error.html'));
       process.exit(test_result)
     }).run();
   }
@@ -97,34 +134,27 @@ var verboseResult = {
 function getAsyncCommandWrapper(opts, fn) {
   if (opts.commandName == 'endx')
     return function (arg1, arg2, arg3, arg4, arg5) {
-      if (opts.verbose) show_exec(opts, arguments);
+      report_func(opts, arguments);
       fn.call(this, arg1, arg2, arg3, arg4, arg5)
     };
   return function (arg1, arg2, arg3, arg4, arg5) {
-    if (opts.verbose) show_exec(opts, arguments);
-    try{
+    report_func(opts, arguments);
+    try {
       if (!Fiber.current)
         throw new Error('not in Fiber');
       var r = Future.fromPromise(fn.call(this, arg1, arg2, arg3, arg4, arg5)).wait();
-      if (opts.verbose && verboseResult[opts.commandName])
+      if (verboseResult[opts.commandName])
         console.log('  result=', JSON.stringify(r));
       return r;
     }
-    catch(e) {
+    catch (e) {
       console.log(e)
+      var shot = [report_screenshots_dir, '/', new Date().getTime(), '.png'].join('');
+      report_stream.write('<img src="' + shot + '">\n');
+      this.saveScreenshot(shot);
       throw e;
     }
   }
-}
-
-function show_exec(opts, args) {
-  var str = [
-    opts.persona, '.', opts.commandName, '(',
-    Array.prototype.slice.call(args).map(function (a) {
-      return JSON.stringify(a);
-    }).join(', '),
-    ')'];
-  console.log(str.join(''));
 }
 
 function getWaitUntilCommandWrapper(opts, fn) {
@@ -171,13 +201,23 @@ function getBrowser(name, opts, options) {
   }, instance.waitUntil);
   instance.addCommand = function (name, code) {
     instance[name] = function (arg1, arg2, arg3, arg4, arg5) {
-      if (opts.verbose) show_exec({
+      report_func({
         persona: name,
         verbose: opts.verbose,
         commandName: name
       }, arguments);
-      code.call(this, arg1, arg2, arg3, arg4, arg5)
-    }
+
+      try {
+        code.call(this, arg1, arg2, arg3, arg4, arg5)
+      }
+      catch (e) {
+        console.log(e)
+        var shot = [report_screenshots_dir, '/', new Date().getTime(), '.png'].join('');
+        report_stream.write('<img src="' + shot + '">\n');
+        this.saveScreenshot(shot);
+        throw e;
+      }
+    };
   };
 
   instance.addCommand("check_text", function (texts) {
@@ -273,7 +313,7 @@ function getBrowser(name, opts, options) {
     self.wait_text({ '#cvvindex': 'Exemplo WebRTC/AppCVV' }, 5000)
 
     self.click('#btnOP')
-    self.check_text({'.esperaOP': 'Escolha como você quer falar com a gente'})
+    self.check_text({ '.esperaOP': 'Escolha como você quer falar com a gente' })
 
     if (!texto) self.click('[for="checkbox-texto"]');
     if (!audio) self.click('[for="checkbox-audio"]');

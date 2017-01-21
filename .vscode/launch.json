@@ -5,7 +5,8 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceRoot}/tests/testChat_v_o.js",
+      "program": "${workspaceRoot}/tests/testOP.js",
+      // "program": "${workspaceRoot}/tests/testChat_v_o.js",
       "cwd": "${workspaceRoot}",
       "outFiles": [],
       "sourceMaps": true

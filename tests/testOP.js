@@ -31,7 +31,7 @@ h.run(
     ana.click('.checkbox-audio');
     messias.check_dashboard([0, 0, 0, 0], [1, 1, 0, 0]);
     ana.click('.checkbox-video');
-    messias.check_dashboard([0, 0, 0, 0], [1, 1, 1, 0]);
+    messias.check_dashboard([0, 0, 0, 0], [1, 1, 1, 1]);
     ana.click('.btnHome');
     messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
   },

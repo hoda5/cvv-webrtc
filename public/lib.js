@@ -102,24 +102,36 @@ window.cvv = {
       return firebase.database().ref('filaVoluntario/' + uid).remove();
     },
     esperar: function (fn) {
+      var filaVoluntario = {};
       return cvv.boot().then(function () {
         var vuid = firebase.auth().currentUser.uid;
+        firebase.database().ref('filaVoluntario').on('value', function (v) {
+          filaVoluntario = v.val() || {};
+        });
         firebase.database().ref('filaOP').on('value', function (v) {
           var filaOP = v.val();
           Object.keys(filaOP).some(function (ouid) {
-            if (!filaOP[ouid].voluntario) {
-              return firebase.database().ref('filaOP/' + ouid).transaction(function (o) {
-                if (o && !o.voluntario) {
-                  o.voluntario = vuid;
-                  return o;
-                }
-              });
+            if (!filaOP[ouid].conectando) {
+              var canal;
+              if (filaOP.texto && filaVoluntario.texto) canal = 'texto';
+              if (filaOP.audio && filaVoluntario.audio) canal = 'audio';
+              if (filaOP.video && filaVoluntario.video) canal = 'video';
+              if (canal)
+                return firebase.database().ref('filaOP/' + ouid).transaction(function (o) {
+                  if (o && !o.conectando) {
+                    o.conectando = {
+                      voluntario: vuid,
+                      canal: canal
+                    };
+                    return o;
+                  }
+                });
             }
           })
         });
         firebase.database().ref('atendimento').on('child_added', function (val) {
           var a = val.val();
-          if (a.voluntario===vuid) fn(a);
+          if (a.voluntario === vuid) fn(a);
         });
       });
     }
@@ -199,25 +211,44 @@ function trataErro(error) {
 
 function coloca_na_filaOP(uid, opts) {
   cvv.internal.o.uid = uid;
-  return firebase.database().ref('filaOP/' + uid)
-    .transaction(function (o) {
-      o = o || {};
-      if (typeof opts.texto === 'boolean')
-        o.texto = opts.texto;
-      else if (typeof o.texto !== 'boolean')
-        o.texto = true;
-      if (typeof opts.audio === 'boolean')
-        o.audio = opts.audio;
-      else if (typeof o.audio !== 'boolean')
-        o.audio = true;
-      if (typeof opts.video === 'boolean')
-        o.video = opts.video;
-      else if (typeof o.video !== 'boolean')
-        o.video = true;
-      o.dhFila = o.dhFila || new Date();
-      return o;
-    })
+  var ref = firebase.database().ref('filaOP/' + uid);
+  ref.transaction(function (o) {
+    o = o || {};
+    if (typeof opts.texto === 'boolean')
+      o.texto = opts.texto;
+    else if (typeof o.texto !== 'boolean')
+      o.texto = true;
+    if (typeof opts.audio === 'boolean')
+      o.audio = opts.audio;
+    else if (typeof o.audio !== 'boolean')
+      o.audio = true;
+    if (typeof opts.video === 'boolean')
+      o.video = opts.video;
+    else if (typeof o.video !== 'boolean')
+      o.video = true;
+    o.dhFila = o.dhFila || new Date();
+    return o;
+  })
     .then(function () {
       return uid;
     });
+  ref.on('value', function (v) {
+    var filaOP = v.val();
+    if (filaOP && filaOP.conectando) {
+      firebase.database()
+        .ref('atendimentos')
+        .push(
+          {
+            "op": uid,
+            "voluntario": filaOP.conectando.voluntario,
+            "canal": filaOP.conectando.canal,
+            "inicio": new Date(),
+            "dhFila": filaOP.dhFila
+          }
+        ).then(function () {
+          location.href = '/v-' + filaOP.conectando.canal+'.html';
+        });
+    }
+  });
+  return uid;
 }
