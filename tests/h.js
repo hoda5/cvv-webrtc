@@ -6,14 +6,32 @@ const assert = require('chai').assert;
 var pending = [];
 
 var personas = {
+  messias: {
+    options: {
+      desiredCapabilities: {
+        browserName: 'chrome'
+      }
+    },
+    init: function (browser) {
+      browser.windowHandlePosition({x: 20, y: 0});
+      browser.setViewportSize({
+        width: 320,
+        height: 786
+      });
+    }
+  },
   ana: {
     options: {
       desiredCapabilities: {
         browserName: 'chrome'
       }
     },
-    init: function () {
-
+    init: function (browser) {
+      browser.windowHandlePosition({x: 350, y: 0});
+      browser.setViewportSize({
+        width: 320,
+        height: 586
+      });
     }
   }
 };
@@ -37,8 +55,9 @@ module.exports = {
       try {
         try {
           opts.personas.forEach(function (p, idx) {
-            browsers[idx].init();
-            personas[p].init()
+            var browser=browsers[idx];
+            browser.init();
+            personas[p].init(browser);
           })
           test.apply(this, browsers);
         }
@@ -137,7 +156,7 @@ function getBrowser(name, opts, options) {
     commandName: 'waitUntil'
   }, instance.waitUntil);
   instance.addCommand = function (name, code) {
-    instance[name] = function(arg1, arg2, arg3, arg4, arg5) {
+    instance[name] = function (arg1, arg2, arg3, arg4, arg5) {
       if (opts.verbose) show_exec({
         persona: name,
         verbose: opts.verbose,
@@ -147,14 +166,71 @@ function getBrowser(name, opts, options) {
     }
   };
 
-  instance.addCommand("check_text", function (selector, expectedText) {
-    var text = this.getText(selector);
-    assert.equal(text, expectedText, 'getText("' + selector + '")');
+  instance.addCommand("check_text", function () {
+    var self = this;
+    var t;
+    if (arguments[1]) {
+      t = {};
+      t[arguments[0]] = arguments[1];
+    }
+    else t = arguments[0]
+    var k = Object.keys(t);
+    if (k.length == 0) assert.fail(arguments);
+    k.forEach(function (selector) {
+      var expectedText = t[selector];
+      var text = self.getText(selector);
+      assert.equal(text, expectedText, 'getText("' + selector + '")');
+    })
+  });
+
+  instance.addCommand("wait_text", function (texts, timeout, message) {
+    var self = this;
+    var t;
+    var k = Object.keys(texts);
+    if (k.length == 0) assert.fail(arguments);
+    self.waitUntil(function () {
+      if (opts.verbose)
+        console.log('  ---- ' + name + '.wait_text');
+      for (var i = 0; i < k.length; i++) {
+        var selector = k[i];
+        var expectedText = texts[selector];
+        var text = self.getText(selector);
+        if (opts.verbose)
+          console.log('  expect=', JSON.stringify(expectedText));
+        if (text == expectedText) {
+          k.splice(i, 1);
+          i--;
+        }
+      }
+      return k.length == 0;
+    }, timeout || 1000, message);
   });
 
   instance.addCommand("check_visible", function (selector) {
     if (!this.isVisible(selector))
       assert.fail('isVisible("' + selector + '") failed');
+  });
+
+  instance.addCommand("check_dashboard", function (a, f) {
+    var self = this;
+    self.waitUntil(function () {
+      var text = self.getText('#statTexto > .a');
+      return text != '- em atendimento';
+    }, 10000, 'dashboard não inicializado');
+
+    this.wait_text(
+      {
+        '#statTexto > .a': [a[0], ' em atendimento'].join(''),
+        '#statAudio > .a': [a[1], ' em atendimento'].join(''),
+        '#statVideo > .a': [a[2], ' em atendimento'].join(''),
+        '#statVoluntario > .a': [a[3], ' em atendimento'].join(''),
+
+        '#statTexto > .f': [f[0], ' na fila'].join(''),
+        '#statAudio > .f': [f[1], ' na fila'].join(''),
+        '#statVideo > .f': [f[2], ' na fila'].join(''),
+        '#statVoluntario > .f': [f[3], ' ociosos(as)'].join('')
+      }
+      , 10000, 'Erro no dashboard');
   });
 
   return instance;
