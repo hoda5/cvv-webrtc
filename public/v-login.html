@@ -133,7 +133,7 @@
                 <label class="mdl-textfield__label" for="senhaVoluntario">Senha</label>
               </div>
               <div class="botaoAcessar mdl-cell mdl-cell--6-col">
-                <button class="mdl-button mdl-js-button mdl-button--raised" onclick="cvv.loginVoluntario(qs('#loginVoluntario').value).then( function() { location.href = '/v-home.html';})">Acessar</button>
+                <button class="mdl-button mdl-js-button mdl-button--raised" onclick="cvv.voluntario.login(qs('#loginVoluntario').value).then( function() { location.href = '/v-home.html';})">Acessar</button>
               </div>
               <br />
               <br />
@@ -141,12 +141,12 @@
               <div class="mdl-cell mdl-cell--12-col">
                 <div class="mdl-grid botoesRedesSociais">
                   <div class="botaoAcessar mdl-cell mdl-cell--6-col">
-                    <button class="btnFacebook mdl-button mdl-js-button mdl-button--raised" onclick="cvv.loginFacebook().then( function() { location.href = '/v-home.html';})"><i class="fa fa-facebook-official" aria-hidden="true"></i> Login Facebook</button>
+                    <button class="btnFacebook mdl-button mdl-js-button mdl-button--raised" onclick="cvv.voluntario.loginFacebook().then( function() { location.href = '/v-home.html';})"><i class="fa fa-facebook-official" aria-hidden="true"></i> Login Facebook</button>
                   </div>
                   <br />
                   <br />
                   <div class="botaoAcessar mdl-cell mdl-cell--6-col">
-                    <button class="btnGoogle mdl-button mdl-js-button mdl-button--raised" onclick="cvv.loginGoogle().then( function() { location.href = '/v-home.html';})"><i class="fa fa-google-plus" aria-hidden="true"></i> Login Google</button>
+                    <button class="btnGoogle mdl-button mdl-js-button mdl-button--raised" onclick="cvv.voluntario.loginGoogle().then( function() { location.href = '/v-home.html';})"><i class="fa fa-google-plus" aria-hidden="true"></i> Login Google</button>
                   </div>
                 </div>
               </div>
