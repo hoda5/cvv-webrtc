@@ -102,7 +102,7 @@ function getAsyncCommandWrapper(opts, fn) {
     };
   return function (arg1, arg2, arg3, arg4, arg5) {
     if (opts.verbose) show_exec(opts, arguments);
-    try {
+    try{
       if (!Fiber.current)
         throw new Error('not in Fiber');
       var r = Future.fromPromise(fn.call(this, arg1, arg2, arg3, arg4, arg5)).wait();
@@ -110,8 +110,8 @@ function getAsyncCommandWrapper(opts, fn) {
         console.log('  result=', JSON.stringify(r));
       return r;
     }
-    catch (e) {
-      console.log(e);
+    catch(e) {
+      console.log(e)
       throw e;
     }
   }
@@ -244,6 +244,42 @@ function getBrowser(name, opts, options) {
         '#statVoluntario > .f': [f[3], ' ociosos(as)'].join('')
       }
       , 10000, 'Erro no dashboard');
+  });
+
+  instance.addCommand("disponibilizar_atendimento", function (texto, audio, video) {
+    var self = this;
+
+    self.wait_text({ '#cvvindex': 'Exemplo WebRTC/AppCVV' }, 5000)
+
+    self.click('#btnVol')
+    self.wait_text({ '.demo-content h5': 'Acesso de voluntários' }, 5000)
+    self.click('.btnPassword')
+    self.wait_text({ '.demo-content h3': 'Voluntário Teste' }, 10000)
+
+    self.click('#btnDisponibilidade');
+    self.wait_text({ '.demo-content h5': 'Informe por quais canais você está se disponibilizando a atender' })
+
+    if (!texto) self.click('[for="checkbox-texto"]');
+    if (!audio) self.click('[for="checkbox-audio"]');
+    if (!video) self.click('[for="checkbox-video"]');
+
+    self.click('#btnDisponibilizar');
+    self.wait_text({ '#procurando': 'Esperando que a outra pessoa nos procure' }, 5000)
+  });
+
+  instance.addCommand("solicitar_atendimento", function (texto, audio, video) {
+    var self = this;
+
+    self.wait_text({ '#cvvindex': 'Exemplo WebRTC/AppCVV' }, 5000)
+
+    self.click('#btnOP')
+    self.check_text({'.esperaOP': 'Escolha como você quer falar com a gente'})
+
+    if (!texto) self.click('[for="checkbox-texto"]');
+    if (!audio) self.click('[for="checkbox-audio"]');
+    if (!video) self.click('[for="checkbox-video"]');
+
+    self.wait_text({ '#procurando': 'Aguarde alguns instantes que um de nossos voluntários já vai te atender.' }, 5000)
   });
 
   return instance;

@@ -36,8 +36,6 @@ h.run(
     messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
   },
   function (err) {
-    if (err)
-      console.log(err);
-    else
+    if (!err)
       console.log('OK')
   });
