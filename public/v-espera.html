@@ -103,22 +103,21 @@
             <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
           </div>
           <a href="#" class="btnHome mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast"
-            onclick="cvv.voluntario.retirarDisponibilidade(firebase.auth().currentUser.uid).then( function() {location.href='/v-home.html'} )">
-            Sair da fila
-          </a>
-        </div>
-      </div>
-    </main>
-    <footer class="demo-footer mdl-mini-footer">
-      <div class="mdl-mini-footer--left-section">
-        <ul class="mdl-mini-footer--link-list">
-          <li><a href="/ajuda.html">Ajuda</a></li>
-          <li><a href="/politica.html">Política de privacidade</a></li>
-        </ul>
-      </div>
-    </footer>
+            onclick="cvv.voluntario.retirarDisponibilidade(firebase.auth().currentUser.uid).then( function() {location.href='/v-home.html'} )"> Sair da fila
+</a>
+</div>
+</div>
+</main>
+<footer class="demo-footer mdl-mini-footer">
+  <div class="mdl-mini-footer--left-section">
+    <ul class="mdl-mini-footer--link-list">
+      <li><a href="/ajuda.html">Ajuda</a></li>
+      <li><a href="/politica.html">Política de privacidade</a></li>
+    </ul>
   </div>
-  <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+</footer>
+</div>
+<script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 </body>
 
 </html>
@@ -126,9 +125,10 @@
 <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
 <script src="lib.js"></script>
 <script>
+  cvv.voluntario.esperar(function (atendimento) {
+    location.href = '/v-' + atendimento.canal + '.html';
+  });
   window.addEventListener("beforeunload", function () {
-    cvv.boot().then(function () {
-      cvv.voluntario.retirarDisponibilidade(firebase.auth().currentUser.uid);
-    });
+    cvv.voluntario.retirarDisponibilidade(firebase.auth().currentUser.uid);
   });
 </script>

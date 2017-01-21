@@ -243,18 +243,16 @@
       var c = qs(id + ' > .e');
       var t = d.a + d.f;
       var p = t == 0 ? d.f : Math.floor(d.f / t * 100);
-      ud();
-      function ud() {
-        var sda = c.style.strokeDasharray.split(',');
-        var a = parseInt(sda[0])
-        if (a > p) {
-          c.style.strokeDasharray = [a - 1, sda[1]].join('');
-          setTimeout(cvv.dashboard.update, 10);
-        }
-        else if (a < p) {
-          c.style.strokeDasharray = [a + 1, sda[1]].join('');
-          setTimeout(cvv.dashboard.update, 10);
-        }
+
+      var sda = c.style.strokeDasharray.split(',');
+      var a = parseInt(sda[0])
+      if (a > p) {
+        c.style.strokeDasharray = [a - 1, sda[1]].join('');
+        setTimeout(cvv.dashboard.update, 10);
+      }
+      else if (a < p) {
+        c.style.strokeDasharray = [a + 1, sda[1]].join('');
+        setTimeout(cvv.dashboard.update, 10);
       }
     }
   });

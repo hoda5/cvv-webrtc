@@ -100,6 +100,28 @@ window.cvv = {
     },
     retirarDisponibilidade: function (uid) {
       return firebase.database().ref('filaVoluntario/' + uid).remove();
+    },
+    esperar: function (fn) {
+      return cvv.boot().then(function () {
+        var vuid = firebase.auth().currentUser.uid;
+        firebase.database().ref('filaOP').on('value', function (v) {
+          var filaOP = v.val();
+          Object.keys(filaOP).some(function (ouid) {
+            if (!filaOP[ouid].voluntario) {
+              return firebase.database().ref('filaOP/' + ouid).transaction(function (o) {
+                if (o && !o.voluntario) {
+                  o.voluntario = vuid;
+                  return o;
+                }
+              });
+            }
+          })
+        });
+        firebase.database().ref('atendimento').on('child_added', function (val) {
+          var a = val.val();
+          if (a.voluntario===vuid) fn(a);
+        });
+      });
     }
   },
   dashboard: {
