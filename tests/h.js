@@ -59,7 +59,7 @@ module.exports = {
   domain: 'http://localhost:5000/',
   run: function run(report_opts, test, callback) {
     var test_result;
-    var report_dir, report_screenshots_dir, report_name, report_index, report_stream, report_browsers, report_level = 0;
+    var report_dir, report_screenshots_dir, report_name, report_index, report_stream, report_browsers, report_level = 0, report_catching = 0;
 
     var n = process.argv[1]
       .replace(/\.js$/g, '').split(/[\/\\]/);
@@ -76,9 +76,9 @@ module.exports = {
       defaultEncoding: 'utf8',
       autoClose: true
     });
-    report_stream.write('<html><head>'+report_css()+'</head><body>');
+    report_stream.write('<html><head>' + report_css() + '</head><body>');
 
-    test_result = 0;
+    test_result = null;
     report_browsers = [];
     report_opts.personas.forEach(function (p) {
       var options = personas[p].options;
@@ -99,6 +99,7 @@ module.exports = {
           test.apply(this, report_browsers);
         }
         catch (e) {
+          test_result = test_result || e;
           report_error({ persona: '?', verbose: report_opts.verbose }, e);
         }
         finally {
@@ -107,13 +108,16 @@ module.exports = {
         callback();
       } catch (error) {
         callback(error);
-        test_result = 1;
+        test_result = test_result || error;
       }
       report_stream.write('</body></html>');
       report_stream.close();
-      if (test_result)
+      if (test_result) {
+        if (!test_result.$reported)
+          console.log(test_result);
         fs.renameSync(report_index, report_index.replace('.html', '.error.html'));
-      process.exit(test_result)
+      }
+      process.exit(test_result ? 1 : 0);
     }).run();
 
     var verboseResult = {
@@ -175,10 +179,27 @@ module.exports = {
         return r;
       }
       catch (e) {
-        report_error(opts, e);
+        if (report_catching == 0) {
+          report_error(opts, e);
+          test_result = test_result || e;
+        }
+        else throw e;
       }
       finally {
         report_level--;
+      }
+    }
+
+    function report_catch(code) {
+      report_catching++;
+      try {
+        code();
+      }
+      catch(e) {
+        //
+      }
+      finally {
+        report_catching--;
       }
     }
 
@@ -205,6 +226,7 @@ module.exports = {
           e.$reported = true;
         }
         catch (e2) {
+          test_result = test_result || e2;
           console.log(e2)
         }
       throw e;
@@ -218,6 +240,7 @@ module.exports = {
               try {
                 resolve(condition());
               } catch (error) {
+                test_result = test_result || error;
                 reject(error)
               }
             }).run();
@@ -287,8 +310,8 @@ module.exports = {
           if (report_opts.verbose)
             console.log('  ---- ' + personaName + '.wait_text');
           for (var i = 0; i < k.length; i++) {
-            var selector = k[i];
-            try {
+            report_catch(function () {
+              var selector = k[i];
               var expectedText = texts[selector];
               var text = self.getText(selector);
               if (report_opts.verbose)
@@ -297,10 +320,7 @@ module.exports = {
                 k.splice(i, 1);
                 i--;
               }
-            }
-            catch (e) {
-
-            }
+            });
           }
           return k.length == 0;
         }, timeout || 1000, message);
@@ -390,9 +410,9 @@ module.exports = {
 
 function report_css() {
   return '<style>' +
-    '.level1 h3 {color: blue;}'+
-    '.sublevel {display: block}'+
-    '.result {color: green}'+
+    '.level1 h3 {color: blue;}' +
+    '.sublevel {display: block}' +
+    '.result {color: green}' +
     '</style>';
 }
 
