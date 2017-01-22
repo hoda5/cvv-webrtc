@@ -5,6 +5,9 @@ const h = require('./h');
 h.run(
   {
     personas: ['messias', 'maria', 'ana'],
+    debug: {
+      maria: 10001
+    },
     verbose: true
   },
   function (messias, maria, ana) {
@@ -18,7 +21,7 @@ h.run(
     messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 1]);
 
     ana.solicitar_atendimento(true, false, false);
-    messias.check_dashboard([0, 0, 0, 0], [1, 0, 0, 1]);
+    messias.check_dashboard([1, 0, 0, 1], [0, 0, 0, 0]);
 
     ana.click('.btnHome');
     maria.click('.btnHome');

@@ -80,9 +80,9 @@ module.exports = {
 
     test_result = null;
     report_browsers = [];
-    report_opts.personas.forEach(function (p) {
+    report_opts.personas.forEach(function (p, idx) {
       var options = personas[p].options;
-      var b = getBrowser(p, options);
+      var b = getBrowser(p, (9201+idx).toString(), options);
       pending.push(b);
       report_browsers.push(b);
     });
@@ -94,6 +94,10 @@ module.exports = {
           report_opts.personas.forEach(function (p, idx) {
             var browser = report_browsers[idx];
             browser.init();
+            browser.url('chrome://version/')
+            var version = browser.getText('body');
+
+
             personas[p].init(browser);
           })
           test.apply(this, report_browsers);
@@ -112,11 +116,14 @@ module.exports = {
       }
       report_stream.write('</body></html>');
       report_stream.close();
+      var report_error_flag = report_index.replace('.html', '.error');
       if (test_result) {
         if (!test_result.$reported)
           console.log(test_result);
-        fs.renameSync(report_index, report_index.replace('.html', '.error.html'));
+        fs.writeFileSync(report_error_flag, test_result.toString(), 'utf-8');
       }
+      else
+        fs.unlink(report_error_flag);
       process.exit(test_result ? 1 : 0);
     }).run();
 
@@ -195,7 +202,7 @@ module.exports = {
       try {
         code();
       }
-      catch(e) {
+      catch (e) {
         //
       }
       finally {
@@ -249,7 +256,11 @@ module.exports = {
       });
     }
 
-    function getBrowser(personaName, options) {
+    function getBrowser(personaName, debugPort, options) {
+      // options.desiredCapabilities.chromeOptions = {
+      //   // "debuggerAddress": 'localhost:'+debugPort,
+      //   "args": ["--remote-debugging-port=" + debugPort]
+      // };
       var instance = webdriverio.remote(options);
 
       const SYNC_COMMANDS = ['domain', '_events', '_maxListeners', 'setMaxListeners', 'emit',
@@ -307,6 +318,7 @@ module.exports = {
         var k = Object.keys(texts);
         if (k.length == 0) assert.fail(arguments);
         self.waitUntil(function () {
+          report_stream.write('<div class="wait_text">');
           if (report_opts.verbose)
             console.log('  ---- ' + personaName + '.wait_text');
           for (var i = 0; i < k.length; i++) {
@@ -322,6 +334,7 @@ module.exports = {
               }
             });
           }
+          report_stream.write('</div>');
           return k.length == 0;
         }, timeout || 1000, message);
       });
@@ -336,7 +349,7 @@ module.exports = {
         self.waitUntil(function () {
           var text = self.getText('#statTexto > .a');
           return text != '- em atendimento';
-        }, 10000, 'dashboard não inicializado');
+        }, 15000, 'dashboard não inicializado');
 
         this.wait_text(
           {
@@ -409,11 +422,16 @@ module.exports = {
 };
 
 function report_css() {
-  return '<style>' +
-    '.level1 h3 {color: blue;}' +
-    '.sublevel {display: block}' +
-    '.result {color: green}' +
-    '</style>';
+  return [
+    '<style>',
+    'body{font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;}',
+    'div {padding-left: 1em;}',
+    '.level1 h3 {color: blue;}',
+    '.sublevel {display: block}',
+    '.result {color: green}',
+    '.wait_text {border-top: 1px solid}',
+    '</style>'
+  ].join('\n');
 }
 
 process.stdin.resume();

@@ -105,35 +105,52 @@ window.cvv = {
       var filaVoluntario = {};
       return cvv.boot().then(function () {
         var vuid = firebase.auth().currentUser.uid;
-        firebase.database().ref('filaVoluntario').on('value', function (v) {
+        firebase.database().ref('filaVoluntario/' + vuid).on('value', function (v) {
           filaVoluntario = v.val() || {};
         });
         firebase.database().ref('filaOP').on('value', function (v) {
-          var filaOP = v.val();
-          Object.keys(filaOP).some(function (ouid) {
-            if (!filaOP[ouid].conectando) {
-              var canal;
-              if (filaOP.texto && filaVoluntario.texto) canal = 'texto';
-              if (filaOP.audio && filaVoluntario.audio) canal = 'audio';
-              if (filaOP.video && filaVoluntario.video) canal = 'video';
-              if (canal)
-                return firebase.database().ref('filaOP/' + ouid).transaction(function (o) {
-                  if (o && !o.conectando) {
-                    o.conectando = {
-                      voluntario: vuid,
-                      canal: canal
-                    };
-                    return o;
-                  }
-                });
-            }
-          })
+          if (!cvv.internal.v.conectando) {
+            var toda_filaOP = v.val();
+            if (toda_filaOP)
+            Object.keys(toda_filaOP).some(function (ouid) {
+              var filaOP = toda_filaOP[ouid];
+              if (!filaOP.conectando) {
+                var canal;
+                if (filaOP.texto && filaVoluntario.texto) canal = 'texto';
+                if (filaOP.audio && filaVoluntario.audio) canal = 'audio';
+                if (filaOP.video && filaVoluntario.video) canal = 'video';
+                if (canal) {
+                  cvv.voluntario.iniciar_conexao(vuid, ouid, canal);
+                  return true;
+                }
+              }
+            })
+          }
         });
         firebase.database().ref('atendimento').on('child_added', function (val) {
+          debugger
           var a = val.val();
           if (a.voluntario === vuid) fn(a);
         });
       });
+    },
+    iniciar_conexao: function (vuid, ouid, canal) {
+      debugger
+      cvv.internal.v.conectando = {
+        OP: ouid,
+        canal: canal,
+        ts: new Date().getTime()
+      };
+      return firebase.database().ref('filaOP/' + ouid).transaction(function (o) {
+        if (o && !o.conectando) {
+          o.conectando = {
+            voluntario: vuid,
+            canal: canal
+          };
+          return o;
+        }
+      });
+      // TODO cancelar conexao
     }
   },
   dashboard: {
@@ -233,20 +250,25 @@ function coloca_na_filaOP(uid, opts) {
       return uid;
     });
   ref.on('value', function (v) {
+    debugger
     var filaOP = v.val();
     if (filaOP && filaOP.conectando) {
       firebase.database()
         .ref('atendimentos')
         .push(
-          {
-            "op": uid,
-            "voluntario": filaOP.conectando.voluntario,
-            "canal": filaOP.conectando.canal,
-            "inicio": new Date(),
-            "dhFila": filaOP.dhFila
-          }
+        {
+          "op": uid,
+          "voluntario": filaOP.conectando.voluntario,
+          "canal": filaOP.conectando.canal,
+          "inicio": new Date(),
+          "dhFila": filaOP.dhFila
+        }
         ).then(function () {
-          location.href = '/v-' + filaOP.conectando.canal+'.html';
+          return ref.remove();
+        }).then(function () {
+          firebase.database().ref('filaVoluntario/' + filaOP.conectando.voluntario).remove();
+        }).then(function () {
+          location.href = '/v-' + filaOP.conectando.canal + '.html';
         });
     }
   });
