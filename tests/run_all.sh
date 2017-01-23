@@ -1,11 +1,15 @@
 all="testOP testVol testChat_v_o testAudio_v_o"
 
+RESULT=0
+
 for t in $all
 do
-  echo $t
+  echo -n "$t: "
   r=`node $t`
-  if [ $r != 'OK']
+  echo $r
+  if [ $r != 'OK' ]
   then
-    echo $r;
+    echo "------------------------"
+    RESULT=1
   fi
 done

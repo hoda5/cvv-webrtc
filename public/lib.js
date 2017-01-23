@@ -75,7 +75,7 @@ window.cvv = {
           var a = va.val();
           var ouid = firebase.auth().currentUser && firebase.auth().currentUser.uid;
           if (a && a.op == ouid) {
-            cvv.internal.o.webrtc = webrtc.join[a.canal](vuid, ouid);
+            cvv.internal.o.webrtc = webrtc[a.canal].join(vuid, ouid);
           }
           else if (cvv.internal.st < new Date().getTime() - 5000)
             location.href = '/index.html';
@@ -178,7 +178,7 @@ window.cvv = {
         var vuid = firebase.auth().currentUser.uid;
         firebase.database().ref('atendimento/' + vuid).on('value', function (va) {
           var a = va.val();
-          if (a) cvv.internal.v.webrtc = webrtc.create[a.canal](vuid, a.op);
+          if (a) cvv.internal.v.webrtc = webrtc[a.canal].create(vuid, a.op);
           else if (cvv.internal.st < new Date().getTime() - 5000)
             location.href = '/v-disponibilidade.html';
         });
