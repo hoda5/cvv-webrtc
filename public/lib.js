@@ -286,7 +286,7 @@ window.webrtc = {
       return roomId;
     },
     join: function (roomId, myId, canal) {
-      webrtc.peer = new Peer(null, { key: 'vfanh8qxv5oh6w29' });
+      webrtc.peer = new Peer(myId, { key: 'vfanh8qxv5oh6w29' });
       var conn = webrtc.peer.connect(roomId, { label: myId });
       conn.on('open', function () {
         debugger
