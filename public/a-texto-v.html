@@ -1,23 +1,24 @@
 <html lang="pt-br">
+
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Exemplo WebRTC/AppCVV</title>
-    <meta name="mobile-web-app-capable" content="yes">
-    <link rel="icon" sizes="192x192" href="images/android-desktop.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Material Design Lite">
-    <link rel="apple-touch-icon-precomposed" href="images/ios-desktop.png">
-    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
-    <meta name="msapplication-TileColor" content="#3372DF">
-    <link rel="shortcut icon" href="images/favicon.png">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-red.min.css">
-    <style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>Exemplo WebRTC/AppCVV</title>
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="images/android-desktop.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Material Design Lite">
+  <link rel="apple-touch-icon-precomposed" href="images/ios-desktop.png">
+  <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+  <meta name="msapplication-TileColor" content="#3372DF">
+  <link rel="shortcut icon" href="images/favicon.png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-red.min.css">
+  <style>
     .demo-ribbon {
         width: 100%;
         height: 40vh;
@@ -35,170 +36,330 @@
     }
 
     .demo-container {
-        max-width: 1600px;
-        width: calc(100% - 16px);
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         margin: 0 auto;
     }
 
     .demo-content {
+        position: fixed;
         border-radius: 2px;
         padding: 80px 56px;
-        margin-bottom: 40px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+        height: 50%;
+        width: 80%;
+        overflow-y: auto;
     }
 
-    .demo-layout.is-small-screen .demo-content {
-        padding: 40px 28px;
+    @media (max-width: 560px) {
+      padding: 0px;
     }
 
-    .demo-footer {
-        padding-left: 40px;
-    }
+.bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: #ffffff;
+  /* box-shadow: 0px -3px 3px 0px rgba(50, 50, 50, 0.1); */
+}
 
-    .demo-footer .mdl-mini-footer--link-list a {
-        font-size: 13px;
-    }
+.bottom .input {
+  height: 64px;
+  background: #ffffff;
+  border: none;
+  width: calc(100% - 64px);
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0 5%;
+  resize: none;
+  overflow: scroll;
+  padding-top: 24px;
+  font-weight: 300;
+  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
+}
+.bottom .input:focus {
+  outline: none;
+}
+.bottom .input::-webkit-scrollbar {
+  width: 0 !important;
+}
+.bottom .send {
+  position: fixed;
+  height: 42.66667px;
+  width: 42.66667px;
+  border-radius: 50%;
+  border: 0;
+  background: #F44336;
+  color: #ffffff;
+  bottom: 10.66667px;
+  right: 10.66667px;
+}
+.bottom .send:before {
+  content: '';
+  background: url(images/ic_send_white_48dp.png) no-repeat center center;
+  background-size: 25.6px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.bottom .send:focus {
+  outline: none;
+}
+.bottom .send:hover {
+  cursor: pointer;
+}
 
-    .h5msgChat {
-        border-radius: 10px 10px 10px 1px;
-        background-color: darkgrey;
-        padding-left: 5px;
-        padding-right: 5px;
-        color: white;
-    }
 
-    .h5msgChatWriter {
-        border-radius: 10px 10px 1px 10px;
-        background-color: darkgrey;
-        padding-left: 5px;
-        padding-right: 5px;
-        color: white;
-    }
+.chat ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.chat ul li {
+  margin: 45px 0 0 0;
+  font-weight: 300;
+}
+.chat ul li a.user {
+  margin: -30px 0 0 0;
+  display: block;
+  color: #333;
+}
+.chat ul li a.user img {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background-color: #f3f3f3;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.chat ul li .date {
+  font-size: 14px;
+  color: #a6a6a6;
+}
+.chat ul li .sysmessage {
+  display: block;
+  padding: 30px;
+  position: relative;
+  background-color: #43A047;
+  color: white;
+  font-size: 15px;
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  font-size: 130%;
+  text-align: center;
+}
+.chat ul li .message {
+  display: block;
+  padding: 10px;
+  position: relative;
+  color: #fff;
+  font-size: 15px;
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.chat ul li .message:before {
+  content: '';
+  position: absolute;
+  border-top: 16px solid rgba(0, 0, 0, 0.15);
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+}
+.chat ul li .message:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  border-left: 17px solid transparent;
+  border-right: 17px solid transparent;
+}
+.chat ul li .message.blur p {
+  -webkit-filter: blur(3px);
+  -moz-filter: blur(3px);
+  -o-filter: blur(3px);
+  -ms-filter: blur(3px);
+  filter: blur(3px);
+}
+.chat ul li .message.blur .hider {
+  opacity: 1;
+  z-index: 1;
+}
+.chat ul li .message p {
+  margin: 0;
+  padding: 0;
+  transition: all 0.1s;
+}
+.chat ul li .message .hider {
+  opacity: 0;
+  z-index: -1;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  margin: -10px;
+  text-align: center;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: all 0.1s;
+}
+.chat ul li .message .hider span {
+  display: block;
+  position: relative;
+  top: 50%;
+  font-size: 16px;
+  transform: translateY(-50%);
+}
+.chat ul li.other a.user {
+  float: right;
+}
+.chat ul li.other .date {
+  float: right;
+  margin: -20px 10px 0 0;
+}
+.chat ul li.other .message {
+  margin: 0 90px 0 0;
+  background-color: #006064;
+}
+.chat ul li.other .message:before {
+  margin: -9px -16px 0 0;
+  right: 0;
+}
+.chat ul li.other .message:after {
+  content: '';
+  right: 0;
+  margin: 0 -15px 0 0;
+  border-top: 17px solid #006064;
+}
+.chat ul li.you a.user {
+  float: left;
+}
+.chat ul li.you .date {
+  float: left;
+  margin: -20px 0 0 10px;
+}
+.chat ul li.you .message {
+  margin: 0 0 0 90px;
+  background-color: #2962FF;
+}
 
-    .msgRight {
-      float: right;
-    }
+.chat ul li.you .message:before {
+  margin: -9px 0 0 -16px;
+  left: 0;
+}
+.chat ul li.you .message:after {
+  content: '';
+  left: 0;
+  margin: 0 0 0 -15px;
+  border-top: 17px solid #2962FF;
+}
 
-    .msgLeft {
-      float: left;
-    }
 
-    .btnHome {
-      align-self: center;
-      margin-top: 2em;
-    }
+
+
     </style>
 </head>
+
 <body>
-    <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
-        <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
-            <div class="mdl-layout__header-row">
-                <span id="a_texto_v" class="mdl-layout-title">Atendendo por texto</span>
-                <div class="mdl-layout-spacer"></div>
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-                    <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
+  <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
+    <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
+      <div class="mdl-layout__header-row">
+        <span id="a_texto_v" class="mdl-layout-title">Atendendo por texto</span>
+        <div class="mdl-layout-spacer"></div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+          <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
                         <i class="material-icons">search</i>
                     </label>
-                    <div class="mdl-textfield__expandable-holder">
-                        <input class="mdl-textfield__input" type="text" id="search">
-                        <label class="mdl-textfield__label" for="search">Enter your query...</label>
-                    </div>
-                </div>
-            </div>
-        </header>
-        <div class="demo-ribbon"></div>
-        <main class="demo-main mdl-layout__content">
-          <div class="demo-container containerChat mdl-grid">
-            <div class="mdl-cell mdl-cell--3-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
-            <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-cell mdl-cell--6-col">
-              <div style="overflow-y: scroll; height: 300px;">
-              <div class="mdl-grid">
-                  <div class="mdl-cell--12-col">
-                    <div class="msgLeft">
-                      <p class="h5msgChat">
-                        Voluntário(a) Maria:
-                      </p>
-                    </div>
-                  </div>
-              </div>
-              <div class="mdl-grid">
-                  <div class="mdl-cell--12-col">
-                    <div class="msgLeft">
-                      <p class="h5msgChat">
-                        CVV, boa tarde!
-                      </p>
-                    </div>
-                  </div>
-              </div>
-              <div class="mdl-grid">
-                  <div class="mdl-cell--12-col">
-                    <div class="msgLeft">
-                      <p class="h5msgChat">
-                        O sigilo é muito importante para o CVV, todas as
-                        mensagens serão excluídas automaticamente ao final da conversa.
-                      </p>
-                    </div>
-                  </div>
-              </div>
-              <div class="mdl-grid">
-                  <div class="mdl-cell--12-col">
-                    <div class="msgRight">
-                      <p class="h5msgChatWriter">
-                        Oi, meu dia está muito difícil, você pode me ajudar?
-                      </p>
-                    </div>
-                  </div>
-              </div>
-              <div class="mdl-grid">
-                  <div class="mdl-cell--12-col">
-                    <div class="msgLeft">
-                      <p class="h5msgChat">
-                        Posso sim!
-                      </p>
-                    </div>
-                  </div>
-              </div>
-              <div class="mdl-grid">
-                  <div class="mdl-cell--12-col">
-                    <div class="msgRight">
-                      <p class="h5msgChatWriter">
-                        Obrigada pela atenção!
-                      </p>
-                    </div>
-                  </div>
-              </div>
-            </div>
-              <div class="mdl-cell--12-col">
-                <div class="mdl-textfield mdl-js-textfield" style="width: 75%;">
-                  <textarea class="mdl-textfield__input" type="text" rows="3" id="inputMsg" ></textarea>
-                  <label class="mdl-textfield__label" for="inputMsg">Digite sua mensagem...</label>
-                </div>
-                  <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored" style="float: right;  margin-top: 1.2em;">
-                    <i class="material-icons">send</i>
-                  </button>
-              </div>
-            </div>
+          <div class="mdl-textfield__expandable-holder">
+            <input class="mdl-textfield__input" type="text" id="search">
+            <label class="mdl-textfield__label" for="search">Enter your query...</label>
           </div>
-      </main>
-      <footer class="demo-footer mdl-mini-footer">
-          <div class="mdl-mini-footer--left-section">
-              <ul class="mdl-mini-footer--link-list">
-                  <li><a href="/ajuda.html">Ajuda</a></li>
-                  <li><a href="/politica.html">Política de privacidade</a></li>
-              </ul>
+        </div>
+      </div>
+    </header>
+    <div class="demo-ribbon"></div>
+    <main class="demo-main mdl-layout__content">
+      <div class="demo-container ">
+        <div class="demo-content chat mdl-color--white mdl-shadow--4dp  ">
+
+          <div id="conectando">
+            conectando...
+            <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
           </div>
-      </footer>
+
+        </div>
+        <div class="bottom" id="bottom">
+          <textarea class="input" id="input"></textarea>
+          <div class="send" id="send"></div>
+        </div>
+      </div>
+
+
+    </main>
   </div>
   <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 </body>
+
 </html>
 <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
+<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 <script src="lib.js"></script>
 <script>
-  cvv.voluntario.iniciar_atendimento();
+  cvv.voluntario.iniciar_atendimento(location.hash.substring(1));
   window.addEventListener("beforeunload", function () {
     cvv.voluntario.finalizar_atendimento();
   });
+
+  function Messager() {
+    var ul;
+    return {
+      online: function () {
+        var e = qs('#conectando');
+        e.parentNode.removeChild  (e);
+        ul = document.createElement('ul');
+        qs('.chat').appendChild(ul);
+      },
+      add: function (message, who) {
+        var li = document.createElement('li');
+        li.classList.add(who == 'OP' ? 'other' : 'you');
+
+        if (who != 'sys') {
+          var a_user = document.createElement('a');
+          a_user.classList.add('user');
+          a_user.setAttribute('href', '#');
+
+          var img_user = document.createElement('img');
+          img_user.setAttribute('src', who == 'OP' ? 'images/person.png' : 'http://www.cvv.org.br/imgs/cvv.png');
+          a_user.appendChild(img_user);
+          li.appendChild(a_user);
+        }
+
+        var date_div = document.createElement('div');
+        date_div.textContent = who == 'OP' ? 'OP' : 'Você';
+        li.appendChild(date_div);
+
+        var message_div = document.createElement('div');
+        message_div.classList.add(who == "sys" ? 'sysmessage' : 'message');
+        var p_div = document.createElement('p');
+        p_div.textContent = message
+        message_div.appendChild(p_div);
+        li.appendChild(message_div);
+        ul.appendChild(li);
+        li.scrollIntoView(true);
+      }
+    };
+  }
+
+  setTimeout(function () {
+    window.messager = Messager();
+    messager.add('O sigilo é muito importante para o CVV, todas as mensagens serão excluídas automaticamente ao final da conversa.', 'sys');
+    qs('#send').addEventListener('click', function () {
+      var input=qs('#input');
+      webrtc.send(input.value);
+      input.value='';
+    })
+  });
+
 </script>

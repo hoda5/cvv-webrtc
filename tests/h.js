@@ -133,6 +133,7 @@ module.exports = {
         if (!test_result.$reported)
           console.log(test_result);
         fs.writeFileSync(report_error_flag, test_result.toString(), 'utf-8');
+        console.log('relatorio: file://'+report_index);
       }
       else
         fs.unlink(report_error_flag);

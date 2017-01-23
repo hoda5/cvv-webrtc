@@ -23,6 +23,13 @@ h.run(
     ana.wait_text({ '#a_texto_o': 'Conversa com: Voluntário Teste' }, 5000);
     maria.wait_text({ '#a_texto_v': 'Atendendo por texto' }, 5000);
 
+    ana.waitUntil(function(){
+      return !ana.isVisible('#conectando');
+    });
+    maria.waitUntil(function(){
+      return !ana.isVisible('#conectando');
+    });
+
     ana.sleep(5000);
 
     ana.click('.btnHome');

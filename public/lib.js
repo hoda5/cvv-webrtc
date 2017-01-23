@@ -262,15 +262,21 @@ window.webrtc = {
   create: function (roomId, joinId) {
     webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29' });
     webrtc.peer.on('connection', function (conn) {
-      debugger
       if (conn.label == joinId) {
+        var seq = 1000000;
+        messager.online();
         conn.on('data', function (data) {
-          webrtc.onmessage.forEach(function (e) {
-            e(data);
-          });
+          debugger
+          messager.add(data.msg, 'OP');
         });
-        webrtc.send = function () {
-          conn.send.apply(conn, Array.slice.prototype.call(arguments));
+        webrtc.send = function (msg) {
+          debugger
+          if (!msg) return;
+          conn.send({
+            seq: seq++,
+            msg: msg
+          });
+          messager.add(msg, 'v');
         };
       }
       else conn.close();
@@ -279,17 +285,25 @@ window.webrtc = {
   },
   join: function (roomId, myId, canal) {
     webrtc.peer = new Peer(null, { key: 'vfanh8qxv5oh6w29' });
-    debugger
-    var conn = peer.connect(roomId, { label: myId });
+    var conn = webrtc.peer.connect(roomId, { label: myId });
     conn.on('open', function () {
       debugger
+      var seq = 1;
+      messager.online();
+      messager.add('O sigilo é muito importante para o CVV, nenhuma mensagem dessa conversa ficará gravada por nós.', 'sys');
+      debugger
       conn.on('data', function (data) {
-        webrtc.onmessage.forEach(function (e) {
-          e(data);
-        });
+        debugger
+        messager.add(data.msg, 'v');
       });
-      webrtc.send = function () {
-        conn.send.apply(conn, Array.slice.prototype.call(arguments));
+      webrtc.send = function (msg) {
+        debugger
+        if (!msg) return;
+        conn.send({
+          seq: seq++,
+          msg: msg
+        });
+        messager.add(msg, 'OP');
       };
     });
     return roomId;
