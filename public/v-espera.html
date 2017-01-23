@@ -126,7 +126,7 @@
 <script src="lib.js"></script>
 <script>
   cvv.voluntario.esperar(function (atendimento) {
-    location.href = '/v-' + atendimento.canal + '.html';
+    location.href = '/a-' + atendimento.canal + '-v.html';
   });
   window.addEventListener("beforeunload", function () {
     cvv.voluntario.retirarDisponibilidade(firebase.auth().currentUser.uid);

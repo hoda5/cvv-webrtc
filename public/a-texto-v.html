@@ -95,7 +95,7 @@
     <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
         <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
             <div class="mdl-layout__header-row">
-                <span class="mdl-layout-title">Exemplo WebRTC/AppCVV</span>
+                <span id="a_texto_v" class="mdl-layout-title">Atendendo por texto</span>
                 <div class="mdl-layout-spacer"></div>
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
                     <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
@@ -179,7 +179,6 @@
                     <i class="material-icons">send</i>
                   </button>
               </div>
-              <a href="/" class="btnHome mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">Página inicial</a>
             </div>
           </div>
       </main>
@@ -198,7 +197,7 @@
 <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
 <script src="lib.js"></script>
 <script>
-  cvv.voluntario.iniciar_atendimento(location.hash.substring(1));
+  cvv.voluntario.iniciar_atendimento();
   window.addEventListener("beforeunload", function () {
     cvv.voluntario.finalizar_atendimento();
   });

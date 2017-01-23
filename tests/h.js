@@ -319,7 +319,16 @@ module.exports = {
         this.keys('\uE03C');
       });
 
+      instance.addCommand("sleep", function (ms) {
+        var fiber = Fiber.current;
+        setTimeout(function () {
+          fiber.run();
+        }, ms);
+        Fiber.yield();
+      });
+
       instance.addCommand("check_text", function (texts) {
+        if (typeof texts !== 'object') throw new Error('argumento0 de check_text deve ser object');
         var self = this;
         var k = Object.keys(texts);
         if (k.length == 0) assert.fail(arguments);
@@ -331,6 +340,7 @@ module.exports = {
       });
 
       instance.addCommand("wait_text", function (texts, timeout, message) {
+        if (typeof texts !== 'object') throw new Error('argumento0 de wait_text deve ser object');
         var self = this;
         var t;
         var k = Object.keys(texts);
@@ -395,7 +405,7 @@ module.exports = {
         self.wait_text({ '.demo-content h3': 'Voluntário Teste' }, 10000)
 
         self.click('#btnDisponibilidade');
-        self.wait_text({ '.demo-content h5': 'Informe por quais canais você está se disponibilizando a atender' })
+        self.wait_text({ '#v_disponibilidade': 'Informe por quais canais você está se disponibilizando a atender' })
 
         if (!texto) self.click('[for="checkbox-texto"]');
         if (!audio) self.click('[for="checkbox-audio"]');

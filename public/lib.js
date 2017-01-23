@@ -7,7 +7,7 @@ window.qsa = function (s) {
 }
 
 window.cvv = {
-  internal: { o: {}, v: {}, d: {} },
+  internal: { o: {}, v: {}, d: {}, st: new Date().getTime() },
   boot: function () {
     if (!cvv.internal.boot)
       cvv.internal.boot = new Promise(function (resolve, reject) {
@@ -70,20 +70,25 @@ window.cvv = {
       });
     },
     iniciar_atendimento: function (vuid) {
-      return cvv.boot().then(function (ouid) {
-        firebase.database.ref('atendimento/' + vuid).on(function (va) {
+      return cvv.boot().then(function () {
+        firebase.database().ref('atendimento/' + vuid).on('value', function (va) {
           var a = va.val();
+          var ouid = firebase.auth().currentUser && firebase.auth().currentUser.uid;
           if (a && a.op == ouid) {
             cvv.internal.o.webrtc = webrtc.join(vuid, a.canal);
           }
-          location.href = '/index.html';
+          else if (cvv.internal.st < new Date().getTime()-5000)
+            location.href = '/index.html';
         });
       });
     },
     finalizar_atendimento: function () {
+      debugger
       if (cvv.internal.o.webrtc) {
-        firebase.database.ref('atendimento/' + cvv.internal.o.webrtc).remove();
-        cvv.internal.o.webrtc.close();
+        webrtc.close();
+        firebase.database().ref('atendimento/' + cvv.internal.o.webrtc).remove().then(function() {
+          location.href = '/index.html';
+        });
       }
     }
   },
@@ -171,17 +176,23 @@ window.cvv = {
     iniciar_atendimento: function () {
       return cvv.boot().then(function (ouid) {
         var vuid = firebase.auth().currentUser.uid;
-        firebase.database.ref('atendimento/' + vuid).on(function (va) {
+        firebase.database().ref('atendimento/' + vuid).on('value', function (va) {
           var a = va.val();
-          if (a && a.op == ouid) cvv.internal.v.webrtc = webrtc.join(vuid, a.canal);
-          location.href = '/v-disponibilidade.html';
+          if (a) cvv.internal.v.webrtc = webrtc.join(vuid, a.canal);
+          else if (cvv.internal.st < new Date().getTime()-5000)
+            location.href = '/v-disponibilidade.html';
         });
       });
     },
     finalizar_atendimento: function () {
+      debugger
       if (cvv.internal.v.webrtc) {
-        firebase.database.ref('atendimento/' + cvv.internal.v.webrtc).remove();
-        cvv.internal.v.webrtc.close();
+        webrtc.close();
+        firebase.database().ref('atendimento/' + cvv.internal.v.webrtc).remove().then(function () {
+          location.href = '/v-disponibilidade.html';
+        }).then(function () {
+          location.href = '/v-disponibilidade.html';
+        });
       }
     }
   },
@@ -246,9 +257,10 @@ window.cvv = {
 }
 
 webrtc = {
-  join: function(room, canal) {
+  join: function (room, canal) {
     return room;
-  }
+  },
+  close: function () { }
 };
 
 cvv.boot();
@@ -306,7 +318,7 @@ function coloca_na_filaOP(uid, opts) {
         }).then(function () {
           firebase.database().ref('filaVoluntario/' + filaOP.conectando.voluntario).remove();
         }).then(function () {
-          location.href = ['/o-', filaOP.conectando.canal, '.html#', filaOP.conectando.voluntario].join('');
+          location.href = ['/a-', filaOP.conectando.canal, '-o.html#', filaOP.conectando.voluntario].join('');
         });
     }
   });
