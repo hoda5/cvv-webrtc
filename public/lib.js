@@ -273,13 +273,14 @@ window.cvv = {
 }
 
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+var secure=true;
 
 window.webrtc = {
   onmessage: [],
   send: null,
   texto: {
     create: function (roomId, joinId) {
-      webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29' });
+      webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29', secure: secure });
       webrtc.peer.on('connection', function (conn) {
         if (conn.label == joinId) {
           var seq = 10000;
@@ -304,7 +305,7 @@ window.webrtc = {
       return roomId;
     },
     join: function (roomId, myId, canal) {
-      webrtc.peer = new Peer(myId, { key: 'vfanh8qxv5oh6w29' });
+      webrtc.peer = new Peer(myId, { key: 'vfanh8qxv5oh6w29', secure: secure });
       var conn = webrtc.peer.connect(roomId, { label: myId });
       conn.on('open', function () {
         debugger
@@ -332,7 +333,7 @@ window.webrtc = {
   },
   audio: {
     create: function (roomId, joinId) {
-      webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29' });
+      webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29', secure: secure });
 
       webrtc.peer.on('call', function (call) {
         call.answer(window.localStream);
@@ -347,7 +348,7 @@ window.webrtc = {
       return roomId;
     },
     join: function (roomId, myId, canal) {
-      webrtc.peer = new Peer(myId, { key: 'vfanh8qxv5oh6w29' });
+      webrtc.peer = new Peer(myId, { key: 'vfanh8qxv5oh6w29', secure: secure });
       webrtc_passo1(true, false, function (err) {
         var call = webrtc.peer.call(roomId, window.localStream);
         if (!call) return alert('erro ao iniciar chamada');
@@ -358,7 +359,7 @@ window.webrtc = {
   },
   video: {
     create: function (roomId, joinId) {
-      webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29' });
+      webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29', secure: secure });
 
       webrtc.peer.on('call', function (call) {
         call.answer(window.localStream);
@@ -373,7 +374,7 @@ window.webrtc = {
       return roomId;
     },
     join: function (roomId, myId, canal) {
-      webrtc.peer = new Peer(myId, { key: 'vfanh8qxv5oh6w29' });
+      webrtc.peer = new Peer(myId, { key: 'vfanh8qxv5oh6w29', secure: secure });
       webrtc_passo1(true, true, function (err) {
         var call = webrtc.peer.call(roomId, window.localStream);
         if (!call) return alert('erro ao iniciar chamada');
