@@ -127,15 +127,14 @@ window.cvv = {
             })
           }
         });
-        firebase.database().ref('atendimento').on('child_added', function (val) {
-          debugger
+        firebase.database().ref('atendimento/'+vuid).on('value', function (val) {
           var a = val.val();
-          if (a.voluntario === vuid) fn(a);
+          if (a)
+            fn(a);
         });
       });
     },
     iniciar_conexao: function (vuid, ouid, canal) {
-      debugger
       cvv.internal.v.conectando = {
         OP: ouid,
         canal: canal,
@@ -199,11 +198,11 @@ window.cvv = {
           cvv.internal.d.s.video.a = 0;
           cvv.internal.d.s.voluntarios.a = 0;
           if (atendimentos)
-            Object.keys(atendimentos).forEach(function (uid) {
-              var a = atendimentos[uid];
-              if (a.texto) cvv.internal.d.s.texto.a++;
-              if (a.audio) cvv.internal.d.s.audio.a++;
-              if (a.video) cvv.internal.d.s.video.a++;
+            Object.keys(atendimentos).forEach(function (vuid) {
+              var a = atendimentos[vuid];
+              if (a.canal=='texto') cvv.internal.d.s.texto.a++;
+              if (a.canal=='audio') cvv.internal.d.s.audio.a++;
+              if (a.canal=='video') cvv.internal.d.s.video.a++;
               cvv.internal.d.s.voluntarios.a++;
             });
           cvv.dashboard.update();
@@ -243,27 +242,26 @@ function coloca_na_filaOP(uid, opts) {
       o.video = opts.video;
     else if (typeof o.video !== 'boolean')
       o.video = true;
-    o.dhFila = o.dhFila || new Date();
+    o.dhFila = o.dhFila || new Date().getTime();
     return o;
   })
     .then(function () {
       return uid;
     });
   ref.on('value', function (v) {
-    debugger
     var filaOP = v.val();
     if (filaOP && filaOP.conectando) {
       firebase.database()
-        .ref('atendimentos')
-        .push(
-        {
-          "op": uid,
-          "voluntario": filaOP.conectando.voluntario,
-          "canal": filaOP.conectando.canal,
-          "inicio": new Date(),
-          "dhFila": filaOP.dhFila
-        }
-        ).then(function () {
+        .ref('atendimento/'+filaOP.conectando.voluntario)
+        .transaction(function(a){
+          if (a) cvv.OP.abortar_conexao();
+          return {
+            "op": uid,
+            "canal": filaOP.conectando.canal,
+            "inicio": new Date().getTime(),
+            "dhFila": filaOP.dhFila
+          };
+        }).then(function () {
           return ref.remove();
         }).then(function () {
           firebase.database().ref('filaVoluntario/' + filaOP.conectando.voluntario).remove();

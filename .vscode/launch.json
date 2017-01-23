@@ -13,11 +13,27 @@
       "sourceMaps": true
     },
     {
-      "name": "Chrome",
+      "name": "Chrome 9201",
       "type": "chrome",
       "request": "attach",
-      "port": 9222,
+      "port": 9201,
+      "pathMapping": {
+        "/": "${workspaceRoot}/public"
+      },
       "webRoot": "${workspaceRoot}/public",
+      "url": "http://localhost:5000/*",
+      "diagnosticLogging": true
+    },
+    {
+      "name": "Chrome 9202",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9202,
+      "webRoot": "${workspaceRoot}/public",
+      "pathMapping": {
+        "/": "${workspaceRoot}/public"
+      },
+      "url": "http://localhost:5000/*",
       "diagnosticLogging": true
     },
     {
@@ -31,10 +47,18 @@
   ],
   "compounds": [
     {
-      "name": "htest&chrome",
+      "name": "htest& 1 chrome",
       "configurations": [
-        "Chrome",
-        "htest"
+        "htest",
+        "Chrome 9201"
+      ]
+    },
+    {
+      "name": "htest& 2 chrome",
+      "configurations": [
+        "htest",
+        "Chrome 9201",
+        "Chrome 9202"
       ]
     }
   ]

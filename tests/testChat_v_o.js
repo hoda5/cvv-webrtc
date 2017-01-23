@@ -4,13 +4,10 @@ const h = require('./h');
 
 h.run(
   {
-    personas: ['messias', 'maria', 'ana'],
-    debug: {
-      maria: 10001
-    },
+    personas: ['maria', 'ana', 'messias'],
     verbose: true
   },
-  function (messias, maria, ana) {
+  function (maria, ana, messias) {
     messias.url(h.domain + '/dashboard.html');
     ana.url(h.domain);
     maria.url(h.domain);
@@ -20,6 +17,7 @@ h.run(
     maria.disponibilizar_atendimento(true, false, false);
     messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 1]);
 
+    maria.devtools();
     ana.solicitar_atendimento(true, false, false);
     messias.check_dashboard([1, 0, 0, 1], [0, 0, 0, 0]);
 

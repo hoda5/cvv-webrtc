@@ -82,7 +82,7 @@ module.exports = {
     report_browsers = [];
     report_opts.personas.forEach(function (p, idx) {
       var options = personas[p].options;
-      var b = getBrowser(p, (9201+idx).toString(), options);
+      var b = getBrowser(p, (9201 + idx).toString(), options);
       pending.push(b);
       report_browsers.push(b);
     });
@@ -94,9 +94,21 @@ module.exports = {
           report_opts.personas.forEach(function (p, idx) {
             var browser = report_browsers[idx];
             browser.init();
-            browser.url('chrome://version/')
-            var version = browser.getText('body');
+            // browser.url('chrome://version');
+            // var text = browser.getText('body');
+            // var m = /\-\-remote\-debugging\-port=(\d+)/g.exec(text);
+            // if (!(m && m[1])) throw new Error('Erro ao pegar --remote-debugging-port de ' + text);
+            // var webDriverRemortPort = m[1];
 
+            // const child = spawn('socat',
+            //   [
+            //     ['tcp-listen:', browser.$debugPort, ',reuseaddr,fork'].join(''),
+            //     ['tcp:127.0.0.1:', webDriverRemortPort].join('')
+            //   ],
+            //   {
+            //     detached: false,
+            //     stdio: 'inherit'
+            //   });
 
             personas[p].init(browser);
           })
@@ -258,10 +270,12 @@ module.exports = {
 
     function getBrowser(personaName, debugPort, options) {
       // options.desiredCapabilities.chromeOptions = {
+      //   "remote-debugging-port": debugPort
       //   // "debuggerAddress": 'localhost:'+debugPort,
-      //   "args": ["--remote-debugging-port=" + debugPort]
+      //   // "args": ["--remote-debugging-port=" + debugPort]
       // };
       var instance = webdriverio.remote(options);
+      instance.$debugPort = debugPort;
 
       const SYNC_COMMANDS = ['domain', '_events', '_maxListeners', 'setMaxListeners', 'emit',
         'addListener', 'on', 'once', 'removeListener', 'removeAllListeners', 'listeners',
@@ -300,6 +314,10 @@ module.exports = {
           });
         };
       };
+
+      instance.addCommand("devtools", function () {
+        this.keys('\uE03C');
+      });
 
       instance.addCommand("check_text", function (texts) {
         var self = this;
