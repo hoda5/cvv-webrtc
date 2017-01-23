@@ -75,9 +75,9 @@ window.cvv = {
           var a = va.val();
           var ouid = firebase.auth().currentUser && firebase.auth().currentUser.uid;
           if (a && a.op == ouid) {
-            cvv.internal.o.webrtc = webrtc.join(vuid, a.canal);
+            cvv.internal.o.webrtc = webrtc.join(vuid, ouid, a.canal);
           }
-          else if (cvv.internal.st < new Date().getTime()-5000)
+          else if (cvv.internal.st < new Date().getTime() - 5000)
             location.href = '/index.html';
         });
       });
@@ -86,7 +86,7 @@ window.cvv = {
       debugger
       if (cvv.internal.o.webrtc) {
         webrtc.close();
-        firebase.database().ref('atendimento/' + cvv.internal.o.webrtc).remove().then(function() {
+        firebase.database().ref('atendimento/' + cvv.internal.o.webrtc).remove().then(function () {
           location.href = '/index.html';
         });
       }
@@ -178,8 +178,8 @@ window.cvv = {
         var vuid = firebase.auth().currentUser.uid;
         firebase.database().ref('atendimento/' + vuid).on('value', function (va) {
           var a = va.val();
-          if (a) cvv.internal.v.webrtc = webrtc.join(vuid, a.canal);
-          else if (cvv.internal.st < new Date().getTime()-5000)
+          if (a) cvv.internal.v.webrtc = webrtc.create(vuid, a.op, a.canal);
+          else if (cvv.internal.st < new Date().getTime() - 5000)
             location.href = '/v-disponibilidade.html';
         });
       });
@@ -256,9 +256,43 @@ window.cvv = {
   }
 }
 
-webrtc = {
-  join: function (room, canal) {
-    return room;
+window.webrtc = {
+  onmessage: [],
+  send: null,
+  create: function (roomId, joinId) {
+    webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29' });
+    webrtc.peer.on('connection', function (conn) {
+      debugger
+      if (conn.label == joinId) {
+        conn.on('data', function (data) {
+          webrtc.onmessage.forEach(function (e) {
+            e(data);
+          });
+        });
+        webrtc.send = function () {
+          conn.send.apply(conn, Array.slice.prototype.call(arguments));
+        };
+      }
+      else conn.close();
+    });
+    return roomId;
+  },
+  join: function (roomId, myId, canal) {
+    webrtc.peer = new Peer(null, { key: 'vfanh8qxv5oh6w29' });
+    debugger
+    var conn = peer.connect(roomId, { label: myId });
+    conn.on('open', function () {
+      debugger
+      conn.on('data', function (data) {
+        webrtc.onmessage.forEach(function (e) {
+          e(data);
+        });
+      });
+      webrtc.send = function () {
+        conn.send.apply(conn, Array.slice.prototype.call(arguments));
+      };
+    });
+    return roomId;
   },
   close: function () { }
 };
