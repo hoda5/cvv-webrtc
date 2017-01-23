@@ -256,6 +256,8 @@ window.cvv = {
   }
 }
 
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
 window.webrtc = {
   onmessage: [],
   send: null,
@@ -316,13 +318,13 @@ window.webrtc = {
     create: function (roomId, joinId) {
       webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29' });
 
-      peer.on('call', function (call) {
+      webrtc.peer.on('call', function (call) {
         call.answer(window.localStream);
-        step3(call);
+        webrtc_passo3(call);
       });
-      peer.on('error', function (err) {
+      webrtc.peer.on('error', function (err) {
         alert(err.message);
-        step1();
+        webrtc_passo2();
       });
       webrtc_passo1(true, false);
 
@@ -330,15 +332,45 @@ window.webrtc = {
     },
     join: function (roomId, myId, canal) {
       webrtc.peer = new Peer(myId, { key: 'vfanh8qxv5oh6w29' });
-      var call = peer.call(roomId, window.localStream, { metadata: { ouid: myId } });
-      webrtc_passo3(call);
+      webrtc_passo1(true, false, function (err) {
+        var call = webrtc.peer.call(roomId, window.localStream);
+        if (!call) return alert('erro ao iniciar chamada');
+        webrtc_passo3(call);
+      });
+      return roomId;
+    }
+  },
+  video: {
+    create: function (roomId, joinId) {
+      webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29' });
+
+      webrtc.peer.on('call', function (call) {
+        call.answer(window.localStream);
+        webrtc_passo3(call);
+      });
+      webrtc.peer.on('error', function (err) {
+        alert(err.message);
+        webrtc_passo2();
+      });
+      webrtc_passo1(true, true);
+
+      return roomId;
+    },
+    join: function (roomId, myId, canal) {
+      webrtc.peer = new Peer(myId, { key: 'vfanh8qxv5oh6w29' });
+      webrtc_passo1(true, true, function (err) {
+        var call = webrtc.peer.call(roomId, window.localStream);
+        if (!call) return alert('erro ao iniciar chamada');
+        webrtc_passo3(call);
+      });
       return roomId;
     }
   },
   close: function () { }
 };
 
-function webrtc_passo1(audio, video) {
+function webrtc_passo1(audio, video, callback) {
+  console.log('webrtc_passo1');
   qs('#passo1').style.display = 'block';
   qs('#passo3').style.display = 'none';
 
@@ -347,23 +379,26 @@ function webrtc_passo1(audio, video) {
     function (stream) {
       qs('#my-video').setAttribute('src', URL.createObjectURL(stream));
       window.localStream = stream;
-      step2();
+      webrtc_passo2();
+      callback();
     }, function () {
       qs('#passo1-erro').style.display = 'block';
     });
 }
 
 function webrtc_passo2() {
+  console.log('webrtc_passo2');
   qs('#passo1').style.display = 'block';
   qs('#passo3').style.display = 'none';
   qs('#passo1-erro').style.display = 'none';
 }
 
 function webrtc_passo3(call) {
+  console.log('webrtc_passo3');
   if (window.existingCall) {
     window.existingCall.close();
   }
-  call.on('stream', function(stream){
+  call.on('stream', function (stream) {
     qs('#their-video').setAttribute('src', URL.createObjectURL(stream));
   });
 

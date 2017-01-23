@@ -21,8 +21,8 @@ h.run(
     ana.solicitar_atendimento(false, true, false);
     messias.check_dashboard([0, 1, 0, 1], [0, 0, 0, 0]);
 
-    ana.wait_text({ '#a_audio_o': 'Atendimento por voz' }, 5000);
-    maria.wait_text({ '#a_audio_v': 'Atendimento por voz' }, 5000);
+    ana.wait_text({ '#a_video_o': 'Atendimento por voz' }, 5000);
+    maria.wait_text({ '#a_video_v': 'Atendimento por voz' }, 5000);
 
     ana.waitUntil(function () {
       return !ana.isVisible('#conectando');

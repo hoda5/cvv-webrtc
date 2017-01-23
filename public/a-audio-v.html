@@ -66,6 +66,11 @@
       font-size: 13px;
     }
 
+    video {
+      height: 5em;
+      width: 5em;
+    }
+
     #btnOP {
       display: flex;
       justify-content: center;
@@ -100,7 +105,11 @@
       float: left;
     }
 
-    .passo1, #passo1-erro, .passo2, .passo3 {
+    #passo1 {
+      display: block;
+    }
+
+    #passo1-erro, #passo3 {
       display: none;
     }
 
@@ -114,7 +123,7 @@
   <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
     <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
       <div class="mdl-layout__header-row">
-        <span class="mdl-layout-title">Exemplo WebRTC/AppCVV</span>
+        <span class="mdl-layout-title" id="a_audio_v">Atendimento por voz</span>
         <div class="mdl-layout-spacer"></div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
           <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
@@ -132,28 +141,24 @@
       <div class="demo-container mdl-grid">
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
         <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
-          <div class="mdl-cell mdl-cell--8-col passo1">
+          <div class="mdl-cell mdl-cell--8-col" id="passo1">
             <div id="conectando">
               conectando...
               <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
             </div>
-          </div>
-          <div class="mdl-cell mdl-cell--8-col passo2">
-            <div id="conectando">
-              conectando...
-              <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
-            </div>
-            <div id='#step1-error'>
+            <div id='passo1-erro'>
               <p>
                 Por favor clique em `permitir` no topo da tela para que possamos usar o microphone do seu computador.
               </p>
             </div>
           </div>
-          <div class="mdl-cell mdl-cell--8-col passo3">
-            <h5>Você está em atendimento</h5>
+          <div class="mdl-cell mdl-cell--8-col" id="passo3">
+            <h5 id="conectado_v">Você está em atendimento</h5>
             <a href="/" id="sairLigacao" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">Desligar</a>
           </div>
         </div>
+        <video id="their-video" autoplay></video>
+        <video id="my-video" muted="true" autoplay></video>
       </div>
       <footer class="demo-footer mdl-mini-footer">
         <div class="mdl-mini-footer--left-section">
