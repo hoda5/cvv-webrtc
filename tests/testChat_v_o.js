@@ -25,14 +25,14 @@ h.run(
 
     ana.waitUntil(function () {
       return !ana.isVisible('#conectando');
-    });
+    }, 10000);
     maria.waitUntil(function () {
       return !ana.isVisible('#conectando');
-    });
+    }, 10000);
 
     ana.chat_envia('Oi');
-    ana.chat_check([{ 'you': 'Oi' }])
-    maria.chat_check([{ 'you': 'Oi' }])
+    ana.chat_check(1, 'Oi', 'you')
+    maria.chat_check(1, 'Oi', 'other')
 
     ana.sleep(5000);
 

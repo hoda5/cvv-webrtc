@@ -133,7 +133,7 @@ module.exports = {
         if (!test_result.$reported)
           console.log(test_result);
         fs.writeFileSync(report_error_flag, test_result.toString(), 'utf-8');
-        console.log('relatorio: file://'+report_index);
+        console.log('relatorio: file://' + report_index);
       }
       else
         fs.unlink(report_error_flag);
@@ -434,16 +434,24 @@ module.exports = {
       instance.addCommand("chat_envia", function (texto) {
         var self = this;
 
-        self.wait_text({ '#cvvindex': 'Exemplo WebRTC/AppCVV' }, 5000)
+        self.waitUntil(function () {
+          return self.isExisting('.chatmessages') && self.isVisible('#input') && self.isVisible('#send');
+        }, 1000);
 
-        self.click('#btnOP')
-        self.check_text({ '.esperaOP': 'Escolha como você quer falar com a gente' })
+        self.setValue('#input', texto);
+        self.click('#send');
 
-        if (!texto) self.click('[for="checkbox-texto"]');
-        if (!audio) self.click('[for="checkbox-audio"]');
-        if (!video) self.click('[for="checkbox-video"]');
+        self.wait_text({ '.chatmessages li:last-child .message': texto });
+        self.waitUntil(function () {
+          return self.getValue('#input') == '';
+        }, 1000)
+      });
 
-        self.wait_text({ '#procurando': 'Aguarde alguns instantes que um de nossos voluntários já vai te atender.' }, 5000)
+      instance.addCommand("chat_check", function (seq, texto, who) {
+        var o = {};
+        var n = ['.', who, ' .message.seq', seq].join('');
+        o[n] = texto;
+        this.wait_text(o);
       });
 
       return instance;

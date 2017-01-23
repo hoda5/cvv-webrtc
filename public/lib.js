@@ -325,6 +325,7 @@ window.Messager = function (you) {
       var e = qs('#conectando');
       e.parentNode.removeChild(e);
       ul = document.createElement('ul');
+      ul.classList.add('chatmessages');
       qs('.chat').appendChild(ul);
     },
     add: function (message, who, seq) {
