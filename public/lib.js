@@ -273,7 +273,7 @@ window.cvv = {
 }
 
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-var secure=true;
+var secure=false;
 
 window.webrtc = {
   onmessage: [],
