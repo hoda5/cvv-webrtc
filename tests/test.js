@@ -60,8 +60,8 @@ var a = webdriverio
             console.log('O texto está errado, devia ser: Aguarde alguns instantes que um de nossos voluntários já vai te atender.');
     })
     .getUrl().then(function (url) {
-        if (url.indexOf('http://localhost:5000/o-login.html') == -1)
-            console.log('A url esta errada. Deveria ser: http://localhost:5000/o-login.html');
+        if (url.indexOf('http://localhost:5000/o-espera.html') == -1)
+            console.log('A url esta errada. Deveria ser: http://localhost:5000/o-espera.html');
     });
 
 //firefox tamanho mobile
@@ -120,8 +120,8 @@ var b = webdriverio
             console.log('O texto está errado, devia ser: Aguarde alguns instantes que um de nossos voluntários já vai te atender.');
     })
     .getUrl().then(function (url) {
-        if (url.indexOf('http://localhost:5000/o-login.html') == -1)
-            console.log('A url esta errada. Deveria ser: http://localhost:5000/o-login.html');
+        if (url.indexOf('http://localhost:5000/o-espera.html') == -1)
+            console.log('A url esta errada. Deveria ser: http://localhost:5000/o-espera.html');
     });
 
 

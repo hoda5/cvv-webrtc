@@ -118,13 +118,13 @@ module.exports = {
           test_result = test_result || e;
           report_error({ persona: '?', verbose: report_opts.verbose }, e);
         }
-        finally {
-          endBrowsers(report_browsers);
-        }
         callback();
       } catch (error) {
         callback(error);
         test_result = test_result || error;
+      }
+      finally {
+        endBrowsers(report_browsers);
       }
       report_stream.write('</body></html>');
       report_stream.close();

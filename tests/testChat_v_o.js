@@ -17,12 +17,14 @@ h.run(
     maria.disponibilizar_atendimento(true, false, false);
     messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 1]);
 
-    maria.devtools();
     ana.solicitar_atendimento(true, false, false);
     messias.check_dashboard([1, 0, 0, 1], [0, 0, 0, 0]);
 
     ana.click('.btnHome');
+
+    maria.wait_text({ '.demo-content h5': 'Informe por quais canais você está se disponibilizando a atender' })
     maria.click('.btnHome');
+
     messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
   },
   function (err) {

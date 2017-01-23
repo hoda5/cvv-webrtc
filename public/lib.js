@@ -69,6 +69,23 @@ window.cvv = {
         }
       });
     },
+    iniciar_atendimento: function (vuid) {
+      return cvv.boot().then(function (ouid) {
+        firebase.database.ref('atendimento/' + vuid).on(function (va) {
+          var a = va.val();
+          if (a && a.op == ouid) {
+            cvv.internal.o.webrtc = webrtc.join(vuid, a.canal);
+          }
+          location.href = '/index.html';
+        });
+      });
+    },
+    finalizar_atendimento: function () {
+      if (cvv.internal.o.webrtc) {
+        firebase.database.ref('atendimento/' + cvv.internal.o.webrtc).remove();
+        cvv.internal.o.webrtc.close();
+      }
+    }
   },
   voluntario: {
     login: function (nome, senha) {
@@ -112,22 +129,22 @@ window.cvv = {
           if (!cvv.internal.v.conectando) {
             var toda_filaOP = v.val();
             if (toda_filaOP)
-            Object.keys(toda_filaOP).some(function (ouid) {
-              var filaOP = toda_filaOP[ouid];
-              if (!filaOP.conectando) {
-                var canal;
-                if (filaOP.texto && filaVoluntario.texto) canal = 'texto';
-                if (filaOP.audio && filaVoluntario.audio) canal = 'audio';
-                if (filaOP.video && filaVoluntario.video) canal = 'video';
-                if (canal) {
-                  cvv.voluntario.iniciar_conexao(vuid, ouid, canal);
-                  return true;
+              Object.keys(toda_filaOP).some(function (ouid) {
+                var filaOP = toda_filaOP[ouid];
+                if (!filaOP.conectando) {
+                  var canal;
+                  if (filaOP.texto && filaVoluntario.texto) canal = 'texto';
+                  if (filaOP.audio && filaVoluntario.audio) canal = 'audio';
+                  if (filaOP.video && filaVoluntario.video) canal = 'video';
+                  if (canal) {
+                    cvv.voluntario.iniciar_conexao(vuid, ouid, canal);
+                    return true;
+                  }
                 }
-              }
-            })
+              })
           }
         });
-        firebase.database().ref('atendimento/'+vuid).on('value', function (val) {
+        firebase.database().ref('atendimento/' + vuid).on('value', function (val) {
           var a = val.val();
           if (a)
             fn(a);
@@ -150,6 +167,22 @@ window.cvv = {
         }
       });
       // TODO cancelar conexao
+    },
+    iniciar_atendimento: function () {
+      return cvv.boot().then(function (ouid) {
+        var vuid = firebase.auth().currentUser.uid;
+        firebase.database.ref('atendimento/' + vuid).on(function (va) {
+          var a = va.val();
+          if (a && a.op == ouid) cvv.internal.v.webrtc = webrtc.join(vuid, a.canal);
+          location.href = '/v-disponibilidade.html';
+        });
+      });
+    },
+    finalizar_atendimento: function () {
+      if (cvv.internal.v.webrtc) {
+        firebase.database.ref('atendimento/' + cvv.internal.v.webrtc).remove();
+        cvv.internal.v.webrtc.close();
+      }
     }
   },
   dashboard: {
@@ -200,9 +233,9 @@ window.cvv = {
           if (atendimentos)
             Object.keys(atendimentos).forEach(function (vuid) {
               var a = atendimentos[vuid];
-              if (a.canal=='texto') cvv.internal.d.s.texto.a++;
-              if (a.canal=='audio') cvv.internal.d.s.audio.a++;
-              if (a.canal=='video') cvv.internal.d.s.video.a++;
+              if (a.canal == 'texto') cvv.internal.d.s.texto.a++;
+              if (a.canal == 'audio') cvv.internal.d.s.audio.a++;
+              if (a.canal == 'video') cvv.internal.d.s.video.a++;
               cvv.internal.d.s.voluntarios.a++;
             });
           cvv.dashboard.update();
@@ -211,6 +244,13 @@ window.cvv = {
     }
   }
 }
+
+webrtc = {
+  join: function(room, canal) {
+    return room;
+  }
+};
+
 cvv.boot();
 
 function trataErro(error) {
@@ -252,8 +292,8 @@ function coloca_na_filaOP(uid, opts) {
     var filaOP = v.val();
     if (filaOP && filaOP.conectando) {
       firebase.database()
-        .ref('atendimento/'+filaOP.conectando.voluntario)
-        .transaction(function(a){
+        .ref('atendimento/' + filaOP.conectando.voluntario)
+        .transaction(function (a) {
           if (a) cvv.OP.abortar_conexao();
           return {
             "op": uid,
@@ -266,9 +306,10 @@ function coloca_na_filaOP(uid, opts) {
         }).then(function () {
           firebase.database().ref('filaVoluntario/' + filaOP.conectando.voluntario).remove();
         }).then(function () {
-          location.href = '/v-' + filaOP.conectando.canal + '.html';
+          location.href = ['/o-', filaOP.conectando.canal, '.html#', filaOP.conectando.voluntario].join('');
         });
     }
   });
   return uid;
 }
+
