@@ -270,11 +270,14 @@ module.exports = {
     }
 
     function getBrowser(personaName, debugPort, options) {
-      // options.desiredCapabilities.chromeOptions = {
-      //   "remote-debugging-port": debugPort
-      //   // "debuggerAddress": 'localhost:'+debugPort,
-      //   // "args": ["--remote-debugging-port=" + debugPort]
-      // };
+      options.desiredCapabilities.chromeOptions = {
+        // "remote-debugging-port": debugPort
+        // "debuggerAddress": 'localhost:'+debugPort,
+        "args": [
+          "--use-fake-ui-for-media-stream",
+          "--use-fake-device-for-media-stream"
+        ]
+      };
       var instance = webdriverio.remote(options);
       instance.$debugPort = debugPort;
 

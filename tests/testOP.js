@@ -5,12 +5,13 @@ const h = require('./h');
 h.run(
   {
     personas: ['ana', 'messias'],
-    verbose: true
+    verbose: false
   },
   function (ana, messias) {
     ana.url(h.domain);
     messias.url(h.domain + '/dashboard.html');
     messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
+    messias.execute('document.body.style.zoom="70%"');
     ana.click('#btnOP')
     ana.check_text({'.esperaOP': 'Escolha como você quer falar com a gente'})
     messias.check_dashboard([0, 0, 0, 0], [1, 1, 1, 0]);

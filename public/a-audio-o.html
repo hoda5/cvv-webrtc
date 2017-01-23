@@ -10,7 +10,7 @@
   <link rel="icon" sizes="192x192" href="images/android-desktop.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Material Design Lite">
+  <meta name="apple-mobile-web-app-title" content="Exemplo WebRTC/AppCVV">
   <link rel="apple-touch-icon-precomposed" href="images/ios-desktop.png">
   <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
   <meta name="msapplication-TileColor" content="#3372DF">
@@ -42,19 +42,21 @@
     }
 
     .demo-content {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
       border-radius: 2px;
       padding: 80px 56px;
-      margin-bottom: 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      margin-bottom: 80px;
     }
 
     .demo-layout.is-small-screen .demo-content {
       padding: 40px 28px;
     }
 
-    .demo-content h5 {}
+    .demo-content * {
+      margin-top: 2em;
+    }
 
     .demo-footer {
       padding-left: 40px;
@@ -63,19 +65,52 @@
     .demo-footer .mdl-mini-footer--link-list a {
       font-size: 13px;
     }
-    #canais {
+
+    #btnOP {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 9em;
+      height: 7em;
+      border-radius: 5em;
+      background-color: #2E7D32;
+      font-size: 150%;
+      color: white;
     }
-      .btnHome {
-        align-self: center;
-        margin-top: 2em;
-      }
-  .mdl-progress {
-      width: 100% !important;
-  }
+
+    #btnPSP {
+      width: 15em;
+      height: 5em;
+    }
+
+    #btnSobre {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 15em;
+    }
+
+    #btnVol {
+      align-self: flex-end;
+      font-size: 70%;
+    }
+
+    #nome-voluntario {
+      margin: 0px;
+      float: left;
+    }
+
+    .passo1, #passo1-erro, .passo2, .passo3 {
+      display: none;
+    }
+
+    #sairLigacao {
+      text-align: center;
+    }
+
   </style>
 </head>
-
-<body>
+<body class="mdc-typography">
   <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
     <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
       <div class="mdl-layout__header-row">
@@ -97,46 +132,54 @@
       <div class="demo-container mdl-grid">
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
         <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
-          <h5 id="v_disponibilidade">Informe por quais canais você está se disponibilizando a atender</h5>
-          <div id="canais">
-            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-audio">
-                <input type="checkbox" id="checkbox-audio" class="mdl-checkbox__input" checked>
-                <span class="mdl-checkbox__label">Voz</span>
-              </label>
-            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-texto">
-                <input type="checkbox" id="checkbox-texto" class="mdl-checkbox__input" checked>
-                <span class="mdl-checkbox__label">Chat</span>
-              </label>
-            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-video">
-                <input type="checkbox" id="checkbox-video" class="mdl-checkbox__input" disabled >
-                <span class="mdl-checkbox__label">Vídeo</span>
-              </label>
+          <div class="mdl-cell mdl-cell--8-col passo1">
+            <div id="conectando">
+              conectando...
+              <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+            </div>
           </div>
-          <hr />
-          <div>
-            <button class="mdl-button mdl-js-button mdl-button--raised" id="btnDisponibilizar"
-              onclick="event.target.setAttribute('disabled', true); cvv.voluntario.disponibilizarAtendimento().then(function () { location.href = '/v-espera.html'})">
-              Disponibilizar atendimento</button>
+          <div class="mdl-cell mdl-cell--8-col passo2">
+            <div id="conectando">
+              conectando...
+              <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+            </div>
+            <div id='#step1-error'>
+              <p>
+                Por favor clique em `permitir` no topo da tela para que possamos usar o microphone do seu computador.
+              </p>
+            </div>
           </div>
-          <a href="/" class="btnHome mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">
-            Página inicial
-          </a>
+          <div class="mdl-cell mdl-cell--8-col passo3">
+            <h5>Você está falando com o(a) voluntário(a):</h5>
+            <h2 id="nome-voluntario"><strong>Voluntário Teste</strong></h2><br>
+            <div class="mdl-cell mdl-cell--8-col paragrafoSigilo">
+              <p>O sigilo é muito importante para o CVV, essa
+                ligação não será gravada e o voluntário manterá
+                sigilo sobre toda conversação</p>
+            </div>
+            <a href="/" id="sairLigacao" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">Desligar</a>
+          </div>
         </div>
       </div>
+      <footer class="demo-footer mdl-mini-footer">
+        <div class="mdl-mini-footer--left-section">
+          <ul class="mdl-mini-footer--link-list">
+            <li><a href="/ajuda.html">Ajuda</a></li>
+            <li><a href="/politica.html">Política de privacidade</a></li>
+          </ul>
+        </div>
+      </footer>
     </main>
-    <footer class="demo-footer mdl-mini-footer">
-      <div class="mdl-mini-footer--left-section">
-        <ul class="mdl-mini-footer--link-list">
-          <li><a href="/ajuda.html">Ajuda</a></li>
-          <li><a href="/politica.html">Política de privacidade</a></li>
-        </ul>
-      </div>
-    </footer>
   </div>
   <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 </body>
-
 </html>
-
 <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
+<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 <script src="lib.js"></script>
+<script>
+  cvv.OP.iniciar_atendimento(location.hash.substring(1));
+  window.addEventListener("beforeunload", function () {
+    cvv.OP.finalizar_atendimento();
+  });
+</script>

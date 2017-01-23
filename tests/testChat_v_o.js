@@ -9,6 +9,7 @@ h.run(
   },
   function (maria, ana, messias) {
     messias.url(h.domain + '/dashboard.html');
+    messias.execute('document.body.style.zoom="70%"');
     ana.url(h.domain);
     maria.url(h.domain);
 

@@ -5,11 +5,12 @@ const h = require('./h');
 h.run(
   {
     personas: ['maria', 'messias'],
-    verbose: true
+    verbose: false
   },
   function (maria, messias) {
     maria.url(h.domain);
     messias.url(h.domain + '/dashboard.html');
+    messias.execute('document.body.style.zoom="70%"');
     messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
     maria.click('#btnVol')
     maria.wait_text({'.demo-content h5': 'Acesso de voluntários'})

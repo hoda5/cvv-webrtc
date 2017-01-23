@@ -75,7 +75,7 @@ window.cvv = {
           var a = va.val();
           var ouid = firebase.auth().currentUser && firebase.auth().currentUser.uid;
           if (a && a.op == ouid) {
-            cvv.internal.o.webrtc = webrtc.join(vuid, ouid, a.canal);
+            cvv.internal.o.webrtc = webrtc.join[a.canal](vuid, ouid);
           }
           else if (cvv.internal.st < new Date().getTime() - 5000)
             location.href = '/index.html';
@@ -178,7 +178,7 @@ window.cvv = {
         var vuid = firebase.auth().currentUser.uid;
         firebase.database().ref('atendimento/' + vuid).on('value', function (va) {
           var a = va.val();
-          if (a) cvv.internal.v.webrtc = webrtc.create(vuid, a.op, a.canal);
+          if (a) cvv.internal.v.webrtc = webrtc.create[a.canal](vuid, a.op);
           else if (cvv.internal.st < new Date().getTime() - 5000)
             location.href = '/v-disponibilidade.html';
         });
@@ -259,59 +259,120 @@ window.cvv = {
 window.webrtc = {
   onmessage: [],
   send: null,
-  create: function (roomId, joinId) {
-    webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29' });
-    webrtc.peer.on('connection', function (conn) {
-      if (conn.label == joinId) {
-        var seq = 10000;
+  texto: {
+    create: function (roomId, joinId) {
+      webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29' });
+      webrtc.peer.on('connection', function (conn) {
+        if (conn.label == joinId) {
+          var seq = 10000;
+          messager.online();
+          conn.on('data', function (data) {
+            debugger
+            messager.add(data.msg, 'OP', data.seq);
+          });
+          webrtc.send = function (msg) {
+            debugger
+            if (!msg) return;
+            var data = {
+              seq: seq++,
+              msg: msg
+            };
+            conn.send(data);
+            messager.add(data.msg, 'v', data.seq);
+          };
+        }
+        else conn.close();
+      });
+      return roomId;
+    },
+    join: function (roomId, myId, canal) {
+      webrtc.peer = new Peer(null, { key: 'vfanh8qxv5oh6w29' });
+      var conn = webrtc.peer.connect(roomId, { label: myId });
+      conn.on('open', function () {
+        debugger
+        var seq = 1;
         messager.online();
+        messager.add('O sigilo é muito importante para o CVV, nenhuma mensagem dessa conversa ficará gravada por nós.', 'sys');
+        debugger
         conn.on('data', function (data) {
           debugger
-          messager.add(data.msg, 'OP', data.seq);
+          messager.add(data.msg, 'v', data.seq);
         });
         webrtc.send = function (msg) {
           debugger
           if (!msg) return;
-          var data={
+          var data = {
             seq: seq++,
             msg: msg
           };
           conn.send(data);
-          messager.add(data.msg, 'v', data.seq);
+          messager.add(data.msg, 'OP', data.seq);
         };
-      }
-      else conn.close();
-    });
-    return roomId;
-  },
-  join: function (roomId, myId, canal) {
-    webrtc.peer = new Peer(null, { key: 'vfanh8qxv5oh6w29' });
-    var conn = webrtc.peer.connect(roomId, { label: myId });
-    conn.on('open', function () {
-      debugger
-      var seq = 1;
-      messager.online();
-      messager.add('O sigilo é muito importante para o CVV, nenhuma mensagem dessa conversa ficará gravada por nós.', 'sys');
-      debugger
-      conn.on('data', function (data) {
-        debugger
-        messager.add(data.msg, 'v', data.seq);
       });
-      webrtc.send = function (msg) {
-        debugger
-        if (!msg) return;
-          var data={
-            seq: seq++,
-            msg: msg
-          };
-        conn.send(data);
-        messager.add(data.msg, 'OP', data.seq);
-      };
-    });
-    return roomId;
+      return roomId;
+    }
+  },
+  audio: {
+    create: function (roomId, joinId) {
+      webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29' });
+
+      peer.on('call', function (call) {
+        call.answer(window.localStream);
+        step3(call);
+      });
+      peer.on('error', function (err) {
+        alert(err.message);
+        step1();
+      });
+      webrtc_passo1(true, false);
+
+      return roomId;
+    },
+    join: function (roomId, myId, canal) {
+      webrtc.peer = new Peer(myId, { key: 'vfanh8qxv5oh6w29' });
+      var call = peer.call(roomId, window.localStream, { metadata: { ouid: myId } });
+      webrtc_passo3(call);
+      return roomId;
+    }
   },
   close: function () { }
 };
+
+function webrtc_passo1(audio, video) {
+  qs('#passo1').style.display = 'block';
+  qs('#passo3').style.display = 'none';
+
+  navigator.getUserMedia(
+    { audio: audio, video: video },
+    function (stream) {
+      qs('#my-video').setAttribute('src', URL.createObjectURL(stream));
+      window.localStream = stream;
+      step2();
+    }, function () {
+      qs('#passo1-erro').style.display = 'block';
+    });
+}
+
+function webrtc_passo2() {
+  qs('#passo1').style.display = 'block';
+  qs('#passo3').style.display = 'none';
+  qs('#passo1-erro').style.display = 'none';
+}
+
+function webrtc_passo3(call) {
+  if (window.existingCall) {
+    window.existingCall.close();
+  }
+  call.on('stream', function(stream){
+    qs('#their-video').setAttribute('src', URL.createObjectURL(stream));
+  });
+
+  window.existingCall = call;
+  call.on('close', webrtc_passo2);
+
+  qs('#passo1').style.display = 'none';
+  qs('#passo3').style.display = 'block';
+}
 
 window.Messager = function (you) {
   var ul;
@@ -344,7 +405,7 @@ window.Messager = function (you) {
       }
 
       var date_div = document.createElement('div');
-      date_div.textContent = who == you ? 'Você' : (you=='OP'?'Voluntário Teste':'a outra pessoa');
+      date_div.textContent = who == you ? 'Você' : (you == 'OP' ? 'Voluntário Teste' : 'a outra pessoa');
       li.appendChild(date_div);
 
       var message_div = document.createElement('div');
