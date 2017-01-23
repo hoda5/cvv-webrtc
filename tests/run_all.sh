@@ -1,4 +1,4 @@
-all="testOP testVol testChat_v_o testAudio_v_o"
+all="testOP testVol testChat_v_o testAudio_v_o testVideo_v_o"
 
 RESULT=0
 

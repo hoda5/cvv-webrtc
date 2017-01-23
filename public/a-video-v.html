@@ -66,9 +66,12 @@
       font-size: 13px;
     }
 
-    video {
-      height: 5em;
+    #my-video {
       width: 5em;
+    }
+
+    #their-video {
+      width: 100%;
     }
 
     #btnOP {
@@ -109,8 +112,15 @@
       display: block;
     }
 
-    #passo1-erro, #passo3 {
+    #passo1-erro {
       display: none;
+    }
+
+    #passo3 {
+      display: none;
+      margin: 0px;
+      padding: 0px;
+      border: 0px;
     }
 
     #sairLigacao {
@@ -153,11 +163,10 @@
             </div>
           </div>
           <div class="mdl-cell mdl-cell--8-col" id="passo3">
-            <h5 id="conectado_v">Você está em atendimento</h5>
+            <video id="their-video" autoplay></video>
             <a href="/" id="sairLigacao" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">Desligar</a>
           </div>
         </div>
-        <video id="their-video" autoplay></video>
         <video id="my-video" muted="true" autoplay></video>
       </div>
       <footer class="demo-footer mdl-mini-footer">

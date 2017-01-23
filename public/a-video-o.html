@@ -66,9 +66,12 @@
       font-size: 13px;
     }
 
-    video {
-      height: 5em;
+    #my-video {
       width: 5em;
+    }
+
+    #their-video {
+      width: 100%;
     }
 
     #btnOP {
@@ -109,8 +112,15 @@
       display: block;
     }
 
-    #passo1-erro, #passo2, #passo3 {
+    #passo1-erro, #passo2 {
       display: none;
+    }
+
+    #passo3 {
+      display: none;
+      margin: 0px;
+      padding: 0px;
+      border: 0px;
     }
 
     #sairLigacao {
@@ -138,10 +148,9 @@
     </header>
     <div class="demo-ribbon"></div>
     <main class="demo-main mdl-layout__content">
-      <div class="demo-container mdl-grid">
-        <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
-        <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
-          <div class="mdl-cell mdl-cell--8-col" id="passo1">
+      <div class="demo-container">
+        <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800">
+          <div id="passo1">
             <div id="conectando">
               conectando...
               <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
@@ -152,18 +161,11 @@
               </p>
             </div>
           </div>
-          <div class="mdl-cell mdl-cell--8-col" id="passo3">
-            <h5 id="conectado_o">Você está falando com o(a) voluntário(a):</h5>
-            <h2 id="nome-voluntario"><strong>Voluntário Teste</strong></h2><br>
-            <div class="mdl-cell mdl-cell--8-col paragrafoSigilo">
-              <p>O sigilo é muito importante para o CVV,
-                Não gravamos a ligação e o voluntário manterá
-                sigilo sobre toda conversa</p>
-            </div>
+          <div id="passo3">
+            <video id="their-video" autoplay></video>
             <a href="/" id="sairLigacao" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">Desligar</a>
           </div>
         </div>
-        <video id="their-video" autoplay></video>
         <video id="my-video" muted="true" autoplay></video>
       </div>
       <footer class="demo-footer mdl-mini-footer">
