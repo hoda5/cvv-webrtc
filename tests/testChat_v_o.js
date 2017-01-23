@@ -5,7 +5,7 @@ const h = require('./h');
 h.run(
   {
     personas: ['maria', 'ana', 'messias'],
-    verbose: true
+    verbose: false
   },
   function (maria, ana, messias) {
     messias.url(h.domain + '/dashboard.html');
@@ -34,9 +34,25 @@ h.run(
     ana.chat_check(1, 'Oi', 'you')
     maria.chat_check(1, 'Oi', 'other')
 
-    ana.sleep(5000);
+    maria.chat_envia('Olá, como vai você?');
+    ana.chat_check(10000, 'Olá, como vai você?', 'other')
 
-    ana.click('.btnHome');
+    ana.sleep(1000);
+    ana.chat_envia('Meu dia está ruim');
+    maria.chat_check(2, 'Meu dia está ruim', 'other')
+
+    maria.chat_envia('Seu dia está ruim...');
+    ana.chat_check(10001, 'Seu dia está ruim...', 'other')
+    ana.sleep(1000);
+
+    maria.chat_envia('Vocẽ gostaria de me contar o que faz o dia dia estar ruim');
+    ana.chat_check(10002, 'Vocẽ gostaria de me contar o que faz o dia dia estar ruim', 'other')
+
+    ana.sleep(1000);
+    ana.chat_envia('Nem sei por onde começar a falar');
+    maria.chat_check(3, 'Nem sei por onde começar a falar', 'other')
+
+    ana.click('.btnSair');
     ana.wait_text({ '#cvvindex': 'Exemplo WebRTC/AppCVV' });
 
     messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
