@@ -23,17 +23,21 @@ h.run(
     ana.wait_text({ '#a_texto_o': 'Conversa com: Voluntário Teste' }, 5000);
     maria.wait_text({ '#a_texto_v': 'Atendendo por texto' }, 5000);
 
-    ana.waitUntil(function(){
+    ana.waitUntil(function () {
       return !ana.isVisible('#conectando');
     });
-    maria.waitUntil(function(){
+    maria.waitUntil(function () {
       return !ana.isVisible('#conectando');
     });
+
+    ana.chat_envia('Oi');
+    ana.chat_check([{ 'you': 'Oi' }])
+    maria.chat_check([{ 'you': 'Oi' }])
 
     ana.sleep(5000);
 
     ana.click('.btnHome');
-    ana.wait_text({ '#cvvindex': 'Exemplo WebRTC/AppCVV'});
+    ana.wait_text({ '#cvvindex': 'Exemplo WebRTC/AppCVV' });
 
     messias.check_dashboard([0, 0, 0, 0], [0, 0, 0, 0]);
     maria.wait_text({ '#v_disponibilidade': 'Informe por quais canais você está se disponibilizando a atender' }, 5000)

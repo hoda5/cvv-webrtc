@@ -431,6 +431,21 @@ module.exports = {
         self.wait_text({ '#procurando': 'Aguarde alguns instantes que um de nossos voluntários já vai te atender.' }, 5000)
       });
 
+      instance.addCommand("chat_envia", function (texto) {
+        var self = this;
+
+        self.wait_text({ '#cvvindex': 'Exemplo WebRTC/AppCVV' }, 5000)
+
+        self.click('#btnOP')
+        self.check_text({ '.esperaOP': 'Escolha como você quer falar com a gente' })
+
+        if (!texto) self.click('[for="checkbox-texto"]');
+        if (!audio) self.click('[for="checkbox-audio"]');
+        if (!video) self.click('[for="checkbox-video"]');
+
+        self.wait_text({ '#procurando': 'Aguarde alguns instantes que um de nossos voluntários já vai te atender.' }, 5000)
+      });
+
       return instance;
     };
 

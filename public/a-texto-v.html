@@ -312,54 +312,7 @@
     cvv.voluntario.finalizar_atendimento();
   });
 
-  function Messager() {
-    var ul;
-    return {
-      online: function () {
-        var e = qs('#conectando');
-        e.parentNode.removeChild  (e);
-        ul = document.createElement('ul');
-        qs('.chat').appendChild(ul);
-      },
-      add: function (message, who) {
-        var li = document.createElement('li');
-        li.classList.add(who == 'OP' ? 'other' : 'you');
-
-        if (who != 'sys') {
-          var a_user = document.createElement('a');
-          a_user.classList.add('user');
-          a_user.setAttribute('href', '#');
-
-          var img_user = document.createElement('img');
-          img_user.setAttribute('src', who == 'OP' ? 'images/person.png' : 'http://www.cvv.org.br/imgs/cvv.png');
-          a_user.appendChild(img_user);
-          li.appendChild(a_user);
-        }
-
-        var date_div = document.createElement('div');
-        date_div.textContent = who == 'OP' ? 'OP' : 'Você';
-        li.appendChild(date_div);
-
-        var message_div = document.createElement('div');
-        message_div.classList.add(who == "sys" ? 'sysmessage' : 'message');
-        var p_div = document.createElement('p');
-        p_div.textContent = message
-        message_div.appendChild(p_div);
-        li.appendChild(message_div);
-        ul.appendChild(li);
-        li.scrollIntoView(true);
-      }
-    };
-  }
-
   setTimeout(function () {
-    window.messager = Messager();
-    messager.add('O sigilo é muito importante para o CVV, todas as mensagens serão excluídas automaticamente ao final da conversa.', 'sys');
-    qs('#send').addEventListener('click', function () {
-      var input=qs('#input');
-      webrtc.send(input.value);
-      input.value='';
-    })
+    window.messager = Messager('v');
   });
-
 </script>

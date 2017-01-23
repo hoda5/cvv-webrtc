@@ -263,20 +263,21 @@ window.webrtc = {
     webrtc.peer = new Peer(roomId, { key: 'vfanh8qxv5oh6w29' });
     webrtc.peer.on('connection', function (conn) {
       if (conn.label == joinId) {
-        var seq = 1000000;
+        var seq = 10000;
         messager.online();
         conn.on('data', function (data) {
           debugger
-          messager.add(data.msg, 'OP');
+          messager.add(data.msg, 'OP', data.seq);
         });
         webrtc.send = function (msg) {
           debugger
           if (!msg) return;
-          conn.send({
+          var data={
             seq: seq++,
             msg: msg
-          });
-          messager.add(msg, 'v');
+          };
+          conn.send(data);
+          messager.add(data.msg, 'v', data.seq);
         };
       }
       else conn.close();
@@ -294,22 +295,70 @@ window.webrtc = {
       debugger
       conn.on('data', function (data) {
         debugger
-        messager.add(data.msg, 'v');
+        messager.add(data.msg, 'v', data.seq);
       });
       webrtc.send = function (msg) {
         debugger
         if (!msg) return;
-        conn.send({
-          seq: seq++,
-          msg: msg
-        });
-        messager.add(msg, 'OP');
+          var data={
+            seq: seq++,
+            msg: msg
+          };
+        conn.send(data);
+        messager.add(data.msg, 'OP', data.seq);
       };
     });
     return roomId;
   },
   close: function () { }
 };
+
+window.Messager = function (you) {
+  var ul;
+  qs('#send').addEventListener('click', function () {
+    var input = qs('#input');
+    webrtc.send(input.value);
+    input.value = '';
+  });
+  return {
+    online: function () {
+      var e = qs('#conectando');
+      e.parentNode.removeChild(e);
+      ul = document.createElement('ul');
+      qs('.chat').appendChild(ul);
+    },
+    add: function (message, who, seq) {
+      var li = document.createElement('li');
+      li.classList.add(who == you ? 'you' : 'other');
+
+      if (who != 'sys') {
+        var a_user = document.createElement('a');
+        a_user.classList.add('user');
+        a_user.setAttribute('href', '#');
+
+        var img_user = document.createElement('img');
+        img_user.setAttribute('src', who == 'OP' ? 'images/person.png' : 'http://www.cvv.org.br/imgs/cvv.png');
+        a_user.appendChild(img_user);
+        li.appendChild(a_user);
+      }
+
+      var date_div = document.createElement('div');
+      date_div.textContent = who == you ? 'Você' : (you=='OP'?'Voluntário Teste':'a outra pessoa');
+      li.appendChild(date_div);
+
+      var message_div = document.createElement('div');
+      message_div.classList.add(who == "sys" ? 'sysmessage' : 'message');
+      if (seq)
+        message_div.classList.add(['seq', seq].join(''));
+      var p_div = document.createElement('p');
+      p_div.textContent = message
+      message_div.appendChild(p_div);
+      li.appendChild(message_div);
+      ul.appendChild(li);
+      li.scrollIntoView(true);
+    }
+  };
+}
 
 cvv.boot();
 
