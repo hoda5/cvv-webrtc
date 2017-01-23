@@ -71,6 +71,14 @@ window.cvv = {
     },
     iniciar_atendimento: function (vuid) {
       return cvv.boot().then(function () {
+        setTimeout(function(){
+          if (!cvv.internal.o.webrtc)
+            firebase.database().ref('atendimento/' + vuid)
+              .remove()
+              .then(function(){
+                location.href = '/index.html';
+              })
+        }, 30000)
         firebase.database().ref('atendimento/' + vuid).on('value', function (va) {
           var a = va.val();
           var ouid = firebase.auth().currentUser && firebase.auth().currentUser.uid;
@@ -176,6 +184,14 @@ window.cvv = {
     iniciar_atendimento: function () {
       return cvv.boot().then(function (ouid) {
         var vuid = firebase.auth().currentUser.uid;
+        setTimeout(function(){
+          if (!cvv.internal.v.webrtc)
+            firebase.database().ref('atendimento/' + vuid)
+              .remove()
+              .then(function(){
+                location.href = '/index.html';
+              })
+        }, 30000)
         firebase.database().ref('atendimento/' + vuid).on('value', function (va) {
           var a = va.val();
           if (a) cvv.internal.v.webrtc = webrtc[a.canal].create(vuid, a.op);
@@ -434,7 +450,7 @@ window.Messager = function (you) {
         a_user.setAttribute('href', '#');
 
         var img_user = document.createElement('img');
-        img_user.setAttribute('src', who == 'OP' ? 'images/person.png' : 'http://www.cvv.org.br/imgs/cvv.png');
+        img_user.setAttribute('src', who == 'OP' ? 'images/person.png' : 'images/cvv.png');
         a_user.appendChild(img_user);
         li.appendChild(a_user);
       }
