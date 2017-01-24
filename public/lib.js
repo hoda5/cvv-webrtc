@@ -83,12 +83,12 @@ window.cvv = {
           var a = va.val();
           var ouid = firebase.auth().currentUser && firebase.auth().currentUser.uid;
           if (a && a.op == ouid) {
-            try{
+            try {
               cvv.internal.o.webrtc = webrtc[a.canal].join(vuid, ouid);
             }
-            catch(e) {
-              firebase.database().ref('atendimento/'+vuid);
-              return errcompat('o.iniciarAtendimento',e);
+            catch (e) {
+              firebase.database().ref('atendimento/' + vuid);
+              return errcompat('o.iniciarAtendimento', e);
             }
           }
           else if (cvv.internal.st < new Date().getTime() - 5000)
@@ -205,8 +205,8 @@ window.cvv = {
               cvv.internal.v.webrtc = webrtc[a.canal].create(vuid, a.op);
             }
             catch (e) {
-              firebase.database().ref('atendimento/'+vuid);
-              return errcompat('v.iniciarAtendimento',e);
+              firebase.database().ref('atendimento/' + vuid);
+              return errcompat('v.iniciarAtendimento', e);
             }
           else if (cvv.internal.st < new Date().getTime() - 5000)
             location.href = '/v-disponibilidade.html';
@@ -302,7 +302,7 @@ window.webrtc = {
     create: function (roomId, joinId) {
       webrtc.peer = new Peer(roomId, peerOpts);
       webrtc.peer.on('error', function (err) {
-        errcompat('texto.create.peer',err);
+        errcompat('texto.create.peer', err);
       });
       webrtc.peer.on('connection', function (conn) {
         if (conn.label == joinId) {
@@ -311,6 +311,9 @@ window.webrtc = {
           conn.on('data', function (data) {
             debugger
             messager.add(data.msg, 'OP', data.seq);
+          });
+          conn.on('close', function () {
+            webrtc_lost()
           });
           conn.on('error', function (err) {
             errcompat('texto.create.conn', err);
@@ -334,7 +337,7 @@ window.webrtc = {
       webrtc.peer = new Peer(myId, peerOpts);
       var conn = webrtc.peer.connect(roomId, { label: myId });
       conn.on('error', function (err) {
-        errcompat('texto.join.conn',err);
+        errcompat('texto.join.conn', err);
       });
       conn.on('open', function () {
         debugger
@@ -345,6 +348,9 @@ window.webrtc = {
         conn.on('data', function (data) {
           debugger
           messager.add(data.msg, 'v', data.seq);
+        });
+        conn.on('close', function () {
+          webrtc_lost()
         });
         webrtc.send = function (msg) {
           debugger
@@ -362,25 +368,26 @@ window.webrtc = {
   },
   audio: {
     create: function (roomId, joinId) {
-      webrtc.peer = new Peer(roomId, peerOpts);
+      webrtc_passo1(true, false, function () {
+        webrtc.peer = new Peer(roomId, peerOpts);
 
-      webrtc.peer.on('call', function (call) {
-        call.answer(window.localStream);
-        webrtc_passo3(call);
+        webrtc.peer.on('call', function (call) {
+          call.answer(window.localStream);
+          webrtc_passo3(call);
+        });
+        webrtc.peer.on('error', function (err) {
+          alert(err.message);
+          webrtc_passo2();
+        });
       });
-      webrtc.peer.on('error', function (err) {
-        alert(err.message);
-        webrtc_passo2();
-      });
-      webrtc_passo1(true, false);
 
       return roomId;
     },
     join: function (roomId, myId, canal) {
-      webrtc.peer = new Peer(myId, peerOpts);
       webrtc_passo1(true, false, function (err) {
+        webrtc.peer = new Peer(myId, peerOpts);
         var call = webrtc.peer.call(roomId, window.localStream);
-        if (!call) return errcompat('audio.join.call',new Error('erro ao iniciar chamada'));
+        if (!call) return errcompat('audio.join.call', new Error('erro ao iniciar chamada'));
         webrtc_passo3(call);
       });
       return roomId;
@@ -388,25 +395,26 @@ window.webrtc = {
   },
   video: {
     create: function (roomId, joinId) {
-      webrtc.peer = new Peer(roomId, peerOpts);
+      webrtc_passo1(true, true, function () {
+        webrtc.peer = new Peer(roomId, peerOpts);
 
-      webrtc.peer.on('call', function (call) {
-        call.answer(window.localStream);
-        webrtc_passo3(call);
+        webrtc.peer.on('call', function (call) {
+          call.answer(window.localStream);
+          webrtc_passo3(call);
+        });
+        webrtc.peer.on('error', function (err) {
+          alert(err.message);
+          webrtc_passo2();
+        });
       });
-      webrtc.peer.on('error', function (err) {
-        alert(err.message);
-        webrtc_passo2();
-      });
-      webrtc_passo1(true, true);
 
       return roomId;
     },
     join: function (roomId, myId, canal) {
-      webrtc.peer = new Peer(myId, peerOpts);
       webrtc_passo1(true, true, function (err) {
+        webrtc.peer = new Peer(myId, peerOpts);
         var call = webrtc.peer.call(roomId, window.localStream);
-        if (!call) return errcompat('video.join.call',new Error('erro ao iniciar chamada'));
+        if (!call) return errcompat('video.join.call', new Error('erro ao iniciar chamada'));
         webrtc_passo3(call);
       });
       return roomId;
@@ -450,11 +458,15 @@ function webrtc_passo3(call) {
   });
 
   call.on('stream', function (stream) {
+    webrtc.has_stream = true;
     qs('#their-video').setAttribute('src', URL.createObjectURL(stream));
   });
 
   window.existingCall = call;
-  call.on('close', webrtc_passo2);
+  call.on('close', function () {
+    if (webrtc.has_stream) return webrtc_lost();
+    webrtc_passo2();
+  });
 
   qs('#passo1').style.display = 'none';
   qs('#passo3').style.display = 'block';
@@ -463,10 +475,21 @@ function webrtc_passo3(call) {
 window.Messager = function (you) {
   var ul;
   qs('#send').addEventListener('click', function () {
+    send_input()
+  });
+  qs('#input').addEventListener('keyup', function (e) {
+    if (e.keyCode == 13) {
+      send_input();
+      return false;
+    }
+  });
+
+  function send_input() {
     var input = qs('#input');
     webrtc.send(input.value);
     input.value = '';
-  });
+  }
+
   return {
     online: function () {
       var e = qs('#conectando');
@@ -570,17 +593,26 @@ function coloca_na_filaOP(uid, opts) {
   return uid;
 }
 
+function webrtc_lost() {
+  setTimeout(function () {
+    qs('#demo-container').textContent = 'A conexão foi perdida';
+    setTimeout(function () {
+      location.href = '/index.html'
+    }, 5000)
+  }, 5000)
+}
+
 function errcompat(id, e) {
   try {
-  firebase.database().ref('errcompat').push({
-    id: id,
-    agent: navigator.userAgent,
-    e: e.stack ? e.stack.toString() : e.toString(),
-  }).then(function () {
-    location.href = '/errcompat.html';
-  })
+    firebase.database().ref('errcompat').push({
+      id: id,
+      agent: navigator.userAgent,
+      e: e.stack ? e.stack.toString() : e.toString(),
+    }).then(function () {
+      location.href = '/errcompat.html';
+    })
   }
-  catch(e2) {
+  catch (e2) {
     location.href = '/errcompat.html';
   }
 }

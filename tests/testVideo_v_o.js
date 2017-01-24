@@ -34,10 +34,16 @@ h.run(
     ana.sleep(5000);
 
     ana.waitUntil(function () {
-      return ana.isVisible('#their-video');
+      if (ana.isVisible('#their-video')) {
+        var volume=ana.getAttribute('#their-video', 'volume');
+        return (typeof volume!=='undefined')
+      }
     }, 10000);
     maria.waitUntil(function () {
-      return maria.isVisible('#their-video');
+      if (maria.isVisible('#their-video')) {
+        var volume=maria.getAttribute('#their-video', 'volume');
+        return (typeof volume!=='undefined')
+      }
     }, 10000);
 
     ana.click('#sairLigacao');
