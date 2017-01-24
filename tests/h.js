@@ -57,6 +57,8 @@ var personas = {
 
 module.exports = {
   domain: 'http://localhost:5000/',
+  // domain: 'https://i-cvv-hoda5.firebaseapp.com',
+
   run: function run(report_opts, test, callback) {
     var test_result;
     var report_dir, report_screenshots_dir, report_name, report_index, report_stream, report_browsers, report_level = 0, report_catching = 0;
