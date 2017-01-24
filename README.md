@@ -8,7 +8,7 @@
 - [x] fila de atendimento para os voluntários
 - [x] atendimento por chat
 - [x] atendimento por voz
-- [x] atendimento por video
+- [x] atendimento por video (ainda não é possível controlar a qualidade do vídeo)
 - [x] testes automatizados das funcionalidades básicas
 - [ ] design (as telas atuais não estão responsivas e não foi pensada a experiência de uso)
 - [ ] arquitetura (o código atual é apenas uma montagem do tipo copiar/colar)
