@@ -390,9 +390,15 @@ window.webrtc = {
     join: function (roomId, myId, canal) {
       webrtc_passo1(true, false, function (err) {
         webrtc.peer = new Peer(myId, peerOpts);
-        var call = webrtc.peer.call(roomId, window.localStream);
-        if (!call) return errcompat('audio.join.call', new Error('erro ao iniciar chamada'));
-        webrtc_passo3(call);
+        try_call();
+        function try_call() {
+          var call = webrtc.peer.call(roomId, window.localStream);
+          if (!call) return errcompat('audio.join.call', new Error('erro ao iniciar chamada'));
+          webrtc_passo3(call);
+          webrtc.peer.on('error', function (err) {
+            setTimeout(try_call, 300);
+          });
+        }
       });
       return roomId;
     }
@@ -443,6 +449,9 @@ function webrtc_passo1(audio, video, callback) {
         callback();
     }, function () {
       qs('#passo1-erro').style.display = 'block';
+      setTimeout(function () {
+        webrtc_passo1(audio, video, callback);
+      }, 1000);
     });
 }
 
