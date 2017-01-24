@@ -10,7 +10,7 @@
   <link rel="icon" sizes="192x192" href="images/android-desktop.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Exemplo WebRTC/AppCVV">
+  <meta name="apple-mobile-web-app-title" content="Material Design Lite">
   <link rel="apple-touch-icon-precomposed" href="images/ios-desktop.png">
   <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
   <meta name="msapplication-TileColor" content="#3372DF">
@@ -42,20 +42,21 @@
     }
 
     .demo-content {
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-      border-radius: 2px;
-      padding: 80px 56px;
-      margin-bottom: 80px;
+        border-radius: 2px;
+        padding: 80px 56px;
+        margin-bottom: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
+
 
     .demo-layout.is-small-screen .demo-content {
       padding: 40px 28px;
     }
 
-    .demo-content * {
-      margin-top: 2em;
+    .demo-content h3 {
+      margin-top: 48px;
     }
 
     .demo-footer {
@@ -65,75 +66,18 @@
     .demo-footer .mdl-mini-footer--link-list a {
       font-size: 13px;
     }
-
-    #my-video {
-      width: 5em;
+    .btnHome {
+      align-self: center;
+      margin-top: 2em;
     }
-
-    #their-video {
-      width: 100%;
-    }
-
-    #btnOP {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 9em;
-      height: 7em;
-      border-radius: 5em;
-      background-color: #2E7D32;
-      font-size: 150%;
-      color: white;
-    }
-
-    #btnPSP {
-      width: 15em;
-      height: 5em;
-    }
-
-    #btnSobre {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 15em;
-    }
-
-    #btnVol {
-      align-self: flex-end;
-      font-size: 70%;
-    }
-
-    #nome-voluntario {
-      margin: 0px;
-      float: left;
-    }
-
-    #passo1 {
-      display: block;
-    }
-
-    #passo1-erro {
-      display: none;
-    }
-
-    #passo3 {
-      display: none;
-      margin: 0px;
-      padding: 0px;
-      border: 0px;
-    }
-
-    #sairLigacao {
-      text-align: center;
-    }
-
   </style>
 </head>
-<body class="mdc-typography">
+
+<body>
   <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
     <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
       <div class="mdl-layout__header-row">
-        <span class="mdl-layout-title" id="a_video_v">Atendimento por video</span>
+        <span class="mdl-layout-title">Exemplo WebRTC/AppCVV</span>
         <div class="mdl-layout-spacer"></div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
           <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
@@ -151,43 +95,35 @@
       <div class="demo-container mdl-grid">
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
         <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
-          <div class="mdl-cell mdl-cell--8-col" id="passo1">
-            <div id="conectando">
-              conectando...
-              <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
-            </div>
-            <div id='passo1-erro'>
-              <p>
-                Por favor clique em `permitir` no topo da tela para que possamos usar o microphone do seu computador.
-              </p>
-            </div>
-          </div>
-          <div class="mdl-cell mdl-cell--8-col" id="passo3">
-            <video id="their-video"></video>
-            <a href="/" id="sairLigacao" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">Desligar</a>
-          </div>
+          <h3>Por favor use o navegador Google Chrome</h3>
+          <h5>
+            Porque estou vendo esse erro?
+          </h5>
+          <p>
+            Este applicativo é apenas uma demostração de uso do WebRTC para o CVV e está funcionando apenas no Google Chrome.
+            Ao adotar o WebRTC é necessário desenvolver as particularidades referentes à outros navegadores e aplicações nativas para Android e iPhone
+          </p>
+          <a href="/#force" class="btnHome mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">
+                Tentar usar mesmo assim
+          </a>
         </div>
-        <video id="my-video" muted="true"></video>
       </div>
-      <footer class="demo-footer mdl-mini-footer">
-        <div class="mdl-mini-footer--left-section">
-          <ul class="mdl-mini-footer--link-list">
-            <li><a href="/ajuda.html">Ajuda</a></li>
-            <li><a href="/politica.html">Política de privacidade</a></li>
-          </ul>
-        </div>
-      </footer>
     </main>
+    <footer class="demo-footer mdl-mini-footer">
+      <div class="mdl-mini-footer--left-section">
+        <ul class="mdl-mini-footer--link-list">
+          <li><a href="/ajuda.html">Ajuda</a></li>
+          <li><a href="/politica.html">Política de privacidade</a></li>
+        </ul>
+      </div>
+    </footer>
   </div>
   <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 </body>
+
 </html>
-<script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
-<script src="peer.js"></script>
-<script src="lib.js"></script>
 <script>
-  cvv.voluntario.iniciar_atendimento(location.hash.substring(1));
-  window.addEventListener("beforeunload", function () {
-    cvv.voluntario.finalizar_atendimento();
-  });
+  var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+  if (isChrome)
+    location.href = '/index.html'
 </script>

@@ -4,12 +4,12 @@
 - O trabalho pode ser usado livremente pelo CVV ou por qualquer pessoa que quiser utilizá-lo mas não há garantias
 
 # características
-- [x] fila de espera para a Outra Pessoa
-- [x] fila de atendimento para os voluntários
 - [x] atendimento por chat
 - [x] atendimento por voz
 - [x] atendimento por video (ainda não é possível controlar a qualidade do vídeo)
-- [x] monitoramento das fila e atendimentos 
+- [x] fila de espera para a Outra Pessoa (implementação simbólica)
+- [x] fila de atendimento para os voluntários (implementação simbólica)
+- [x] monitoramento das fila e atendimentos
 - [ ] estatísticas de atendimentos e tipos de chamadas
 - [x] testes automatizados das funcionalidades básicas
 - [ ] design (as telas atuais não estão responsivas e não foi pensada a experiência de uso)

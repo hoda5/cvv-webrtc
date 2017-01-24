@@ -26,25 +26,27 @@ h.run(
 
     ana.waitUntil(function () {
       return !ana.isVisible('#conectando');
-    }, 10000);
+    }, 30000);
     maria.waitUntil(function () {
       return !maria.isVisible('#conectando');
-    }, 10000);
+    }, 30000);
 
     ana.sleep(5000);
 
     ana.waitUntil(function () {
-      if (ana.isVisible('#their-video')) {
-        var volume=ana.getAttribute('#their-video', 'volume');
-        return (typeof volume!=='undefined')
+      if (ana.isVisible('#their-video') && ana.getAttribute('#their-video', 'readyState') == 4) {
+        var audio_tracks = ana.execute('return webrtc.tracks.audio').value;
+        var video_tracks = ana.execute('return webrtc.tracks.video').value;
+        return (audio_tracks > 0 && video_tracks > 0)
       }
-    }, 10000);
+    }, 10000, 'erro em ana.their-video');
     maria.waitUntil(function () {
-      if (maria.isVisible('#their-video')) {
-        var volume=maria.getAttribute('#their-video', 'volume');
-        return (typeof volume!=='undefined')
+      if (maria.isVisible('#their-video') && maria.getAttribute('#their-video', 'readyState') == 4) {
+        var audio_tracks = maria.execute('return webrtc.tracks.audio').value;
+        var video_tracks = maria.execute('return webrtc.tracks.video').value;
+        return (audio_tracks > 0 && video_tracks > 0)
       }
-    }, 10000);
+    }, 10000, 'erro em maria.their-video');
 
     ana.click('#sairLigacao');
     ana.wait_text({ '#cvvindex': 'Exemplo WebRTC/AppCVV' });

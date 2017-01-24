@@ -33,7 +33,7 @@ var personas = {
     init: function (browser) {
       browser.windowHandlePosition({ x: 350, y: 0 });
       browser.setViewportSize({
-        width: 320,
+        width: 420,
         height: 586
       });
     }
@@ -45,9 +45,9 @@ var personas = {
       }
     },
     init: function (browser) {
-      browser.windowHandlePosition({ x: 700, y: 0 });
+      browser.windowHandlePosition({ x: 800, y: 0 });
       browser.setViewportSize({
-        width: 320,
+        width: 420,
         height: 586
       });
     }
@@ -378,6 +378,11 @@ module.exports = {
           assert.fail('isVisible("' + selector + '") failed');
       });
 
+      instance.addCommand("check_enabled", function (selector) {
+        if (!this.isEnabled(selector))
+          assert.fail('isEnabled("' + selector + '") failed');
+      });
+
       instance.addCommand("check_dashboard", function (a, f) {
         var self = this;
         self.waitUntil(function () {
@@ -410,13 +415,16 @@ module.exports = {
         self.click('.btnPassword')
         self.wait_text({ '.demo-content h3': 'Voluntário Teste' }, 10000)
 
-        self.click('#btnDisponibilidade');
+        self.click('#btnInformarDisponibilidade');
         self.wait_text({ '#v_disponibilidade': 'Informe por quais canais você está se disponibilizando a atender' })
 
         if (!texto) self.click('[for="checkbox-texto"]');
         if (!audio) self.click('[for="checkbox-audio"]');
         if (!video) self.click('[for="checkbox-video"]');
 
+        self.waitUntil(function(){
+          return self.isEnabled('#btnDisponibilizar');
+        }, 30000, '#btnDisponibilizar deveria estar habilitado, verifique permissoes de microfone/camera');
         self.click('#btnDisponibilizar');
         self.wait_text({ '#procurando': 'Esperando que a outra pessoa nos procure' }, 5000)
       });
@@ -433,7 +441,7 @@ module.exports = {
         if (!audio) self.click('[for="checkbox-audio"]');
         if (!video) self.click('[for="checkbox-video"]');
 
-        self.wait_text({ '#procurando': 'Aguarde alguns instantes que um de nossos voluntários já vai te atender.' }, 5000)
+        self.wait_text({ '#procurando': 'Aguarde alguns instantes que um de nossos voluntários já vai te atender.' }, 15000, '#procurando deveeria estar visivel')
       });
 
       instance.addCommand("chat_envia", function (texto) {

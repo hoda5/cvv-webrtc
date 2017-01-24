@@ -78,9 +78,8 @@
       color: white;
     }
 
-    #btnPSP {
-      width: 15em;
-      height: 5em;
+    #btnPSV {
+      height: auto;
     }
 
     #btnSobre {
@@ -120,9 +119,9 @@
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
         <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
           <a href="/o-espera.html" id="btnOP" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect ">Fale com o CVV</a>
-          <a href="/psv.html" id="btnPSV" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect ">Quero me tornar voluntário(a) do CVV</a>
-          <a href="/sobre.html" id="btnSobre" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect ">Sobre o CVV</a>
-          <a href="/v-login.html" id="btnVol" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect ">Acesso de voluntários</a>
+          <a href="/psv.html" id="btnPSV" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Quero me tornar voluntário(a) do CVV</a>
+          <a href="/sobre.html" id="btnSobre" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Sobre o CVV</a>
+          <a href="/v-login.html" id="btnVol" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Acesso de voluntários</a>
         </div>
       </div>
       <footer class="demo-footer mdl-mini-footer">
@@ -139,3 +138,10 @@
 </body>
 
 </html>
+<script>
+  if (location.hash != '#force') {
+    var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    if (!isChrome)
+      location.href = '/needchrome.html'
+  }
+</script>

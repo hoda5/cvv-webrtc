@@ -50,6 +50,18 @@
       justify-content: center;
     }
 
+    #msgPermissao {
+      padding: 10px;
+      background-color: #E57373;
+      color: black;
+      border-radius: 10px;
+      display: none;
+    }
+
+    #procurando {
+      display: none;
+    }
+
     .demo-layout.is-small-screen .demo-content {
       padding: 40px 28px;
     }
@@ -96,15 +108,15 @@
           <h5 class="esperaOP">Escolha como você quer falar com a gente</h5>
           <div id="canais">
             <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-audio">
-                <input type="checkbox" id="checkbox-audio" class="mdl-checkbox__input" checked onchange="cvv.OP.canal(event.target)">
+                <input type="checkbox" id="checkbox-audio" class="mdl-checkbox__input" checked>
                 <span class="mdl-checkbox__label checkbox-audio">Quero ser atendido(a) por voz</span>
               </label>
             <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-texto">
-                <input type="checkbox" id="checkbox-texto" class="mdl-checkbox__input" checked onchange="cvv.OP.canal(event.target)">
+                <input type="checkbox" id="checkbox-texto" class="mdl-checkbox__input" checked>
                 <span class="mdl-checkbox__label checkbox-texto">Quero ser atendido(a) por chat</span>
               </label>
             <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-video">
-                <input type="checkbox" id="checkbox-video" class="mdl-checkbox__input" checked onchange="cvv.OP.canal(event.target)">
+                <input type="checkbox" id="checkbox-video" class="mdl-checkbox__input" checked>
                 <span class="mdl-checkbox__label checkbox-video">Quero ser atendido(a) por vídeo</span>
               </label>
           </div>
@@ -113,12 +125,13 @@
             Aguarde alguns instantes que um de nossos voluntários já vai te atender.
             <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
           </div>
+          <div id="msgPermissao">
+          </div>
           <a href="/" class="btnHome mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">
             Página inicial
           </a>
           <p>
-            <br /><br />
-            Este aplicativo é apenas uma demostração e não está pronto para ser usado
+            <br /><br /> Este aplicativo é apenas uma demostração e não está pronto para ser usado
           </p>
         </div>
       </div>
@@ -140,8 +153,85 @@
 <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
 <script src="lib.js"></script>
 <script>
-  cvv.OP.entrar();
-  window.addEventListener("beforeunload", function () {
-    cvv.OP.sair();
-  });
+  var enfileirado = new Date().getTime()+5000;
+  var checkbox_texto = qs('#checkbox-texto');
+  var checkbox_audio = qs('#checkbox-audio');
+  var checkbox_video = qs('#checkbox-video');
+  var msgPermissao = qs('#msgPermissao');
+  var procurando = qs('#procurando');
+  checkbox_texto.addEventListener('change', valida);
+  checkbox_audio.addEventListener('change', valida);
+  checkbox_video.addEventListener('change', valida);
+  setTimeout(valida, 50);
+  var permitido;
+  function valida() {
+    permitido = {
+      texto: true,
+      audio: false,
+      video: false
+    };
+    var disabled;
+    var mensagem_Permissao;
+    setTimeout(function () {
+      msgPermissao.innerHTML = mensagem_Permissao
+      if (mensagem_Permissao) {
+        msgPermissao.style.display = 'block';
+      }
+      else {
+        msgPermissao.style.display = 'none';
+      }
+      setTimeout(valida, 1000);
+      enfileirar();
+    }, 300);
+    if (checkbox_audio.checked || checkbox_video.checked) {
+      navigator.getUserMedia(
+        { audio: true, video: checkbox_video.checked },
+        function (stream) {
+          if (stream) {
+            permitido.video = stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0;
+            permitido.audio = stream.getAudioTracks().length > 0;
+            if (checkbox_video.checked && !permitido.video)
+              mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso à câmera do seu computador.';
+            if (checkbox_audio.checked && !permitido.audio)
+              mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso ao microfone do seu computador.';
+          }
+          stream.getTracks().forEach(function (t) { t.stop() })
+        }, function () {
+          mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso aos recursos de multimidia do seu computador.';
+        });
+    }
+  }
+  function enfileirar() {
+    if (typeof enfileirado==='number') {
+      if (enfileirado < new Date().getTime()) {
+        enfileirado = {
+          texto: checkbox_texto.checked && permitido.texto,
+          audio: checkbox_audio.checked && permitido.audio,
+          video: checkbox_video.checked && permitido.video
+        };
+        cvv.OP.entrar(enfileirado);
+        window.addEventListener("beforeunload", function () {
+          cvv.OP.sair();
+        });
+      }
+    }
+    else {
+      if ((checkbox_texto.checked && permitido.texto) != enfileirado.texto) {
+        enfileirado.texto = checkbox_texto.checked && permitido.texto;
+        cvv.OP.canal('texto', enfileirado.texto);
+      }
+      if ((checkbox_audio.checked && permitido.audio) != enfileirado.audio) {
+        enfileirado.audio = checkbox_audio.checked && permitido.audio;
+        cvv.OP.canal('audio', enfileirado.audio);
+      }
+      if ((checkbox_video.checked && permitido.video) != enfileirado.video) {
+        enfileirado.video = checkbox_video.checked && permitido.video;
+        cvv.OP.canal('video', enfileirado.video);
+      }
+    }
+    if (enfileirado.texto || enfileirado.audio || enfileirado.video)
+      procurando.style.display = 'block';
+    else
+      procurando.style.display = 'none';
+  };
 </script>

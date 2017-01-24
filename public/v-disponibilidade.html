@@ -50,6 +50,14 @@
       justify-content: center;
     }
 
+    #msgPermissao {
+      padding: 10px;
+      background-color: #E57373;
+      color: black;
+      display: none;
+      border-radius: 10px;
+    }
+
     .demo-layout.is-small-screen .demo-content {
       padding: 40px 28px;
     }
@@ -113,30 +121,80 @@
               </label>
           </div>
           <hr />
-          <div>
-            <button class="mdl-button mdl-js-button mdl-button--raised" id="btnDisponibilizar"
-              onclick="event.target.setAttribute('disabled', true); cvv.voluntario.disponibilizarAtendimento().then(function () { location.href = '/v-espera.html'})">
-              Disponibilizar atendimento</button>
+          <div id="msgPermissao">
           </div>
-          <a href="/" class="btnHome mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">
+          <div>
+            <button class="mdl-button mdl-js-button mdl-button--raised" id="btnDisponibilizar" onclick="event.target.setAttribute('disabled', true); cvv.voluntario.disponibilizarAtendimento().then(function () { location.href = '/v-espera.html'})" disabled> Disponibilizar atendimento</button>
+</div>
+<a href="/" class="btnHome mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">
             Página inicial
           </a>
-        </div>
-      </div>
-    </main>
-    <footer class="demo-footer mdl-mini-footer">
-      <div class="mdl-mini-footer--left-section">
-        <ul class="mdl-mini-footer--link-list">
-          <li><a href="/ajuda.html">Ajuda</a></li>
-          <li><a href="/politica.html">Política de privacidade</a></li>
-        </ul>
-      </div>
-    </footer>
+</div>
+</div>
+</main>
+<footer class="demo-footer mdl-mini-footer">
+  <div class="mdl-mini-footer--left-section">
+    <ul class="mdl-mini-footer--link-list">
+      <li><a href="/ajuda.html">Ajuda</a></li>
+      <li><a href="/politica.html">Política de privacidade</a></li>
+    </ul>
   </div>
-  <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+</footer>
+</div>
+<script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 </body>
 
 </html>
 
 <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
 <script src="lib.js"></script>
+<script>
+  var btnDisponibilizar = qs('#btnDisponibilizar');
+  var checkbox_texto = qs('#checkbox-texto');
+  var checkbox_audio = qs('#checkbox-audio');
+  var checkbox_video = qs('#checkbox-video');
+  var msgPermissao = qs('#msgPermissao');
+  checkbox_texto.addEventListener('change', valida);
+  checkbox_audio.addEventListener('change', valida);
+  checkbox_video.addEventListener('change', valida);
+  setTimeout(valida, 50);
+  function valida() {
+    var disabled;
+    var mensagem_Permissao;
+    setTimeout(function () {
+      msgPermissao.innerHTML = mensagem_Permissao
+      if (mensagem_Permissao) {
+        msgPermissao.style.display = 'block';
+        btnDisponibilizar.disabled = true;
+        setTimeout(valida, 1000);
+      }
+      else
+        msgPermissao.style.display = 'none';
+    }, 300);
+    if (checkbox_audio.checked || checkbox_video.checked) {
+      navigator.getUserMedia(
+        { audio: true, video: checkbox_video.checked },
+        function (stream) {
+          if (stream) {
+            if (checkbox_video.checked && stream.getVideoTracks().length === 0)
+              mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso à câmera do seu computador.';
+            if ((checkbox_audio.checked || checkbox_video.checked) && stream.getAudioTracks().length === 0)
+              mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso ao microfone do seu computador.';
+            btnDisponibilizar.disabled = (!!mensagem_Permissao) ||
+              !(
+                checkbox_texto.checked ||
+                checkbox_audio.checked ||
+                checkbox_video.checked
+              )
+          }
+          stream.getTracks().forEach(function(t){t.stop()})
+        }, function () {
+          mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso aos recursos de multimidia do seu computador.';
+
+          btnDisponibilizar.disabled = true;
+        });
+    }
+    else
+      btnDisponibilizar.disabled = !checkbox_texto.checked;
+  }
+</script>

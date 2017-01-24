@@ -35,17 +35,17 @@ window.cvv = {
     return cvv.internal.boot;
   },
   OP: {
-    entrar: function () {
+    entrar: function (canais) {
       if (cvv.internal.o.uid)
         return Promise.resolve(cvv.internal.o.uid);
       return cvv.boot().then(function () {
 
         if (firebase.auth().currentUser)
-          return coloca_na_filaOP(firebase.auth().currentUser.uid, {});
+          return coloca_na_filaOP(firebase.auth().currentUser.uid, canais);
 
         return firebase.auth().signInAnonymously()
           .then(function (user) {
-            return coloca_na_filaOP(user.uid, {})
+            return coloca_na_filaOP(user.uid, canais)
           })
           .catch(trataErro);
       });
@@ -59,12 +59,11 @@ window.cvv = {
         })
       });
     },
-    canal: function (checkbox) {
-      var canal = /checkbox\-(.*)$/g.exec(checkbox.id)[1];
+    canal: function (nome, checked) {
       return cvv.boot().then(function () {
         if (firebase.auth().currentUser) {
           var u = {};
-          u[canal] = checkbox.checked;
+          u[nome] = checked;
           return coloca_na_filaOP(firebase.auth().currentUser.uid, u);
         }
       });
@@ -296,6 +295,11 @@ var peerOpts = {
 };
 
 window.webrtc = {
+  remote_stream: null,
+  tracks: {
+    audio: 0,
+    video: 0
+  },
   onmessage: [],
   send: null,
   texto: {
@@ -432,6 +436,7 @@ function webrtc_passo1(audio, video, callback) {
     { audio: audio, video: video },
     function (stream) {
       qs('#my-video').setAttribute('src', URL.createObjectURL(stream));
+      qs('#my-video').play();
       window.localStream = stream;
       webrtc_passo2();
       if (callback)
@@ -458,13 +463,24 @@ function webrtc_passo3(call) {
   });
 
   call.on('stream', function (stream) {
-    webrtc.has_stream = true;
-    qs('#their-video').setAttribute('src', URL.createObjectURL(stream));
+    setTimeout(function () {
+      webrtc.remote_stream = stream;
+      var audioTracks = stream && stream.getAudioTracks()
+      webrtc.tracks.audio = audioTracks ? audioTracks.length : 0;
+      var videoTracks = stream && stream.getVideoTracks()
+      webrtc.tracks.video = videoTracks ? videoTracks.length : 0;
+      setTimeout(function () {
+        qs('#their-video').setAttribute('src', URL.createObjectURL(stream));
+        setTimeout(function () {
+          qs('#their-video').play();
+        }, 100);
+      }, 100);
+    }, 100);
   });
 
   window.existingCall = call;
   call.on('close', function () {
-    if (webrtc.has_stream) return webrtc_lost();
+    if (webrtc.remote_stream) return webrtc_lost();
     webrtc_passo2();
   });
 
