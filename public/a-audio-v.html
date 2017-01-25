@@ -109,7 +109,15 @@
       display: block;
     }
 
-    #passo1-erro, #passo3 {
+    #passo1-erro {
+      padding: 10px;
+      background-color: #E57373;
+      color: black;
+      border-radius: 10px;
+      display: none;
+    }
+
+    #passo2, #passo3 {
       display: none;
     }
 
@@ -148,7 +156,8 @@
             </div>
             <div id='passo1-erro'>
               <p>
-                Por favor clique em `permitir` no topo da tela para que possamos usar o microphone do seu computador.
+                Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita,
+                para permitir o acesso ao microfone do seu computador.
               </p>
             </div>
           </div>

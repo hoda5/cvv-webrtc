@@ -153,48 +153,11 @@
   var checkbox_texto = qs('#checkbox-texto');
   var checkbox_audio = qs('#checkbox-audio');
   var checkbox_video = qs('#checkbox-video');
-  var msgPermissao = qs('#msgPermissao');
   checkbox_texto.addEventListener('change', valida);
   checkbox_audio.addEventListener('change', valida);
   checkbox_video.addEventListener('change', valida);
   setTimeout(valida, 50);
   function valida() {
-    var disabled;
-    var mensagem_Permissao;
-    setTimeout(function () {
-      msgPermissao.innerHTML = mensagem_Permissao
-      if (mensagem_Permissao) {
-        msgPermissao.style.display = 'block';
-        btnDisponibilizar.disabled = true;
-        setTimeout(valida, 1000);
-      }
-      else
-        msgPermissao.style.display = 'none';
-    }, 300);
-    if (checkbox_audio.checked || checkbox_video.checked) {
-      navigator.getUserMedia(
-        { audio: true, video: checkbox_video.checked },
-        function (stream) {
-          if (stream) {
-            if (checkbox_video.checked && stream.getVideoTracks().length === 0)
-              mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso à câmera do seu computador.';
-            if ((checkbox_audio.checked || checkbox_video.checked) && stream.getAudioTracks().length === 0)
-              mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso ao microfone do seu computador.';
-            btnDisponibilizar.disabled = (!!mensagem_Permissao) ||
-              !(
-                checkbox_texto.checked ||
-                checkbox_audio.checked ||
-                checkbox_video.checked
-              )
-          }
-          stream.getTracks().forEach(function(t){t.stop()})
-        }, function () {
-          mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso aos recursos de multimidia do seu computador.';
-
-          btnDisponibilizar.disabled = true;
-        });
-    }
-    else
-      btnDisponibilizar.disabled = !checkbox_texto.checked;
+    btnDisponibilizar.disabled = !(checkbox_texto.checked || checkbox_audio.checked || checkbox_video.checked);
   }
 </script>

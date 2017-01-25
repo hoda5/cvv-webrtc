@@ -50,14 +50,6 @@
       justify-content: center;
     }
 
-    #msgPermissao {
-      padding: 10px;
-      background-color: #E57373;
-      color: black;
-      border-radius: 10px;
-      display: none;
-    }
-
     #procurando {
       display: none;
     }
@@ -153,79 +145,38 @@
 <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
 <script src="lib.js"></script>
 <script>
-  var enfileirado = new Date().getTime()+5000;
+  var enfileirado = null;
   var checkbox_texto = qs('#checkbox-texto');
   var checkbox_audio = qs('#checkbox-audio');
   var checkbox_video = qs('#checkbox-video');
-  var msgPermissao = qs('#msgPermissao');
   var procurando = qs('#procurando');
-  checkbox_texto.addEventListener('change', valida);
-  checkbox_audio.addEventListener('change', valida);
-  checkbox_video.addEventListener('change', valida);
-  setTimeout(valida, 50);
-  var permitido;
-  function valida() {
-    permitido = {
-      texto: true,
-      audio: false,
-      video: false
-    };
-    var disabled;
-    var mensagem_Permissao;
-    setTimeout(function () {
-      msgPermissao.innerHTML = mensagem_Permissao
-      if (mensagem_Permissao) {
-        msgPermissao.style.display = 'block';
-      }
-      else {
-        msgPermissao.style.display = 'none';
-      }
-      setTimeout(valida, 1000);
-      enfileirar();
-    }, 300);
-    if (checkbox_audio.checked || checkbox_video.checked) {
-      navigator.getUserMedia(
-        { audio: true, video: checkbox_video.checked },
-        function (stream) {
-          if (stream) {
-            permitido.video = stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0;
-            permitido.audio = stream.getAudioTracks().length > 0;
-            if (checkbox_video.checked && !permitido.video)
-              mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso à câmera do seu computador.';
-            if (checkbox_audio.checked && !permitido.audio)
-              mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso ao microfone do seu computador.';
-          }
-          stream.getTracks().forEach(function (t) { t.stop() })
-        }, function () {
-          mensagem_Permissao = 'Por favor clique no ícone <img src="images/chrome_mm.png"> no topo da tela, à direita, para permitir o acesso aos recursos de multimidia do seu computador.';
-        });
-    }
-  }
+  checkbox_texto.addEventListener('change', enfileirar);
+  checkbox_audio.addEventListener('change', enfileirar);
+  checkbox_video.addEventListener('change', enfileirar);
+  setTimeout(enfileirar, 5000);
   function enfileirar() {
-    if (typeof enfileirado==='number') {
-      if (enfileirado < new Date().getTime()) {
-        enfileirado = {
-          texto: checkbox_texto.checked && permitido.texto,
-          audio: checkbox_audio.checked && permitido.audio,
-          video: checkbox_video.checked && permitido.video
-        };
-        cvv.OP.entrar(enfileirado);
-        window.addEventListener("beforeunload", function () {
-          cvv.OP.sair();
-        });
-      }
+    if (enfileirado===null) {
+      enfileirado = {
+        texto: checkbox_texto.checked,
+        audio: checkbox_audio.checked,
+        video: checkbox_video.checked
+      };
+      cvv.OP.entrar(enfileirado);
+      window.addEventListener("beforeunload", function () {
+        cvv.OP.sair();
+      });
     }
     else {
-      if ((checkbox_texto.checked && permitido.texto) != enfileirado.texto) {
-        enfileirado.texto = checkbox_texto.checked && permitido.texto;
+      if ((checkbox_texto.checked) != enfileirado.texto) {
+        enfileirado.texto = checkbox_texto.checked;
         cvv.OP.canal('texto', enfileirado.texto);
       }
-      if ((checkbox_audio.checked && permitido.audio) != enfileirado.audio) {
-        enfileirado.audio = checkbox_audio.checked && permitido.audio;
+      if ((checkbox_audio.checked) != enfileirado.audio) {
+        enfileirado.audio = checkbox_audio.checked;
         cvv.OP.canal('audio', enfileirado.audio);
       }
-      if ((checkbox_video.checked && permitido.video) != enfileirado.video) {
-        enfileirado.video = checkbox_video.checked && permitido.video;
+      if ((checkbox_video.checked) != enfileirado.video) {
+        enfileirado.video = checkbox_video.checked;
         cvv.OP.canal('video', enfileirado.video);
       }
     }

@@ -83,7 +83,7 @@ window.cvv = {
           var ouid = firebase.auth().currentUser && firebase.auth().currentUser.uid;
           if (a && a.op == ouid) {
             try {
-              cvv.internal.o.webrtc = webrtc[a.canal].join(vuid, ouid);
+              cvv.internal.o.webrtc = webrtc.join(vuid, ouid, a.canal);
             }
             catch (e) {
               firebase.database().ref('atendimento/' + vuid);
@@ -201,7 +201,7 @@ window.cvv = {
           var a = va.val();
           if (a)
             try {
-              cvv.internal.v.webrtc = webrtc[a.canal].create(vuid, a.op);
+              cvv.internal.v.webrtc = webrtc.create(vuid, a.op, a.canal);
             }
             catch (e) {
               firebase.database().ref('atendimento/' + vuid);
@@ -302,8 +302,8 @@ window.webrtc = {
   },
   onmessage: [],
   send: null,
-  texto: {
-    create: function (roomId, joinId) {
+  create: function (roomId, joinId, canal) {
+    if (canal == 'texto') {
       webrtc.peer = new Peer(roomId, peerOpts);
       webrtc.peer.on('error', function (err) {
         errcompat('texto.create.peer', err);
@@ -335,9 +335,25 @@ window.webrtc = {
         }
         else conn.close();
       });
-      return roomId;
-    },
-    join: function (roomId, myId, canal) {
+    }
+    else {
+      webrtc_passo1(true, canal == 'video', function () {
+        webrtc.peer = new Peer(roomId, peerOpts);
+
+        webrtc.peer.on('call', function (call) {
+          call.answer(window.localStream);
+          webrtc_passo3(call);
+        });
+        webrtc.peer.on('error', function (err) {
+          alert(err.message);
+          webrtc_passo2();
+        });
+      });
+    }
+    return roomId;
+  },
+  join: function (roomId, myId, canal) {
+    if (canal == 'texto') {
       webrtc.peer = new Peer(myId, peerOpts);
       var conn = webrtc.peer.connect(roomId, { label: myId });
       conn.on('error', function (err) {
@@ -367,28 +383,8 @@ window.webrtc = {
           messager.add(data.msg, 'OP', data.seq);
         };
       });
-      return roomId;
-    }
-  },
-  audio: {
-    create: function (roomId, joinId) {
-      webrtc_passo1(true, false, function () {
-        webrtc.peer = new Peer(roomId, peerOpts);
-
-        webrtc.peer.on('call', function (call) {
-          call.answer(window.localStream);
-          webrtc_passo3(call);
-        });
-        webrtc.peer.on('error', function (err) {
-          alert(err.message);
-          webrtc_passo2();
-        });
-      });
-
-      return roomId;
-    },
-    join: function (roomId, myId, canal) {
-      webrtc_passo1(true, false, function (err) {
+    } else {
+      webrtc_passo1(true, canal === 'video', function (err) {
         webrtc.peer = new Peer(myId, peerOpts);
         try_call();
         function try_call() {
@@ -400,35 +396,8 @@ window.webrtc = {
           });
         }
       });
-      return roomId;
     }
-  },
-  video: {
-    create: function (roomId, joinId) {
-      webrtc_passo1(true, true, function () {
-        webrtc.peer = new Peer(roomId, peerOpts);
-
-        webrtc.peer.on('call', function (call) {
-          call.answer(window.localStream);
-          webrtc_passo3(call);
-        });
-        webrtc.peer.on('error', function (err) {
-          alert(err.message);
-          webrtc_passo2();
-        });
-      });
-
-      return roomId;
-    },
-    join: function (roomId, myId, canal) {
-      webrtc_passo1(true, true, function (err) {
-        webrtc.peer = new Peer(myId, peerOpts);
-        var call = webrtc.peer.call(roomId, window.localStream);
-        if (!call) return errcompat('video.join.call', new Error('erro ao iniciar chamada'));
-        webrtc_passo3(call);
-      });
-      return roomId;
-    }
+    return roomId;
   },
   close: function () { }
 };
@@ -437,6 +406,11 @@ function webrtc_passo1(audio, video, callback) {
   console.log('webrtc_passo1');
   qs('#passo1').style.display = 'block';
   qs('#passo3').style.display = 'none';
+
+  setTimeout(function () {
+    if (!window.localStream)
+      qs('#passo1-erro').style.display = 'block';
+  }, 2000);
 
   navigator.getUserMedia(
     { audio: audio, video: video },
