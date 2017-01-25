@@ -286,7 +286,6 @@ window.cvv = {
 
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 var peerOpts = {
-  // key: 'hoda5',
   secure: true,
   host: 'hoda5webrtc.herokuapp.com',
   port: 443,
@@ -295,6 +294,8 @@ var peerOpts = {
 };
 
 window.webrtc = {
+  delayCreate: 1,
+  delayJoin: 2000,
   remote_stream: null,
   tracks: {
     audio: 0,
@@ -303,24 +304,77 @@ window.webrtc = {
   onmessage: [],
   send: null,
   create: function (roomId, joinId, canal) {
+    setTimeout(function () {
+      if (canal == 'texto') {
+        webrtc.peer = new Peer(roomId, peerOpts);
+        webrtc.peer.on('error', function (err) {
+          errcompat('texto.create.peer', err);
+        });
+        webrtc.peer.on('connection', function (conn) {
+          if (conn.label == joinId) {
+            var seq = 10000;
+            messager.online();
+            conn.on('data', function (data) {
+              debugger
+              messager.add(data.msg, 'OP', data.seq);
+            });
+            conn.on('close', function () {
+              webrtc_lost()
+            });
+            conn.on('error', function (err) {
+              errcompat('texto.create.conn', err);
+            });
+            webrtc.send = function (msg) {
+              debugger
+              if (!msg) return;
+              var data = {
+                seq: seq++,
+                msg: msg
+              };
+              conn.send(data);
+              messager.add(data.msg, 'v', data.seq);
+            };
+          }
+          else conn.close();
+        });
+      }
+      else {
+        webrtc_passo1(true, canal == 'video', function () {
+          webrtc.peer = new Peer(roomId, peerOpts);
+
+          webrtc.peer.on('call', function (call) {
+            call.answer(window.localStream);
+            webrtc_passo3(call);
+          });
+          webrtc.peer.on('error', function (err) {
+            // alert(err.message);
+            webrtc_passo2();
+          });
+        });
+      }
+    }, webrtc.delayCreate);
+    return roomId;
+  },
+  join: function (roomId, myId, canal) {
     if (canal == 'texto') {
-      webrtc.peer = new Peer(roomId, peerOpts);
-      webrtc.peer.on('error', function (err) {
-        errcompat('texto.create.peer', err);
-      });
-      webrtc.peer.on('connection', function (conn) {
-        if (conn.label == joinId) {
-          var seq = 10000;
+      setTimeout(function () {
+        webrtc.peer = new Peer(myId, peerOpts);
+        var conn = webrtc.peer.connect(roomId, { label: myId });
+        conn.on('error', function (err) {
+          errcompat('texto.join.conn', err);
+        });
+        conn.on('open', function () {
+          debugger
+          var seq = 1;
           messager.online();
+          messager.add('O sigilo é muito importante para o CVV, nenhuma mensagem dessa conversa ficará gravada por nós.', 'sys');
+          debugger
           conn.on('data', function (data) {
             debugger
-            messager.add(data.msg, 'OP', data.seq);
+            messager.add(data.msg, 'v', data.seq);
           });
           conn.on('close', function () {
             webrtc_lost()
-          });
-          conn.on('error', function (err) {
-            errcompat('texto.create.conn', err);
           });
           webrtc.send = function (msg) {
             debugger
@@ -330,71 +384,28 @@ window.webrtc = {
               msg: msg
             };
             conn.send(data);
-            messager.add(data.msg, 'v', data.seq);
+            messager.add(data.msg, 'OP', data.seq);
           };
-        }
-        else conn.close();
-      });
-    }
-    else {
-      webrtc_passo1(true, canal == 'video', function () {
-        webrtc.peer = new Peer(roomId, peerOpts);
-
-        webrtc.peer.on('call', function (call) {
-          call.answer(window.localStream);
-          webrtc_passo3(call);
         });
-        webrtc.peer.on('error', function (err) {
-          alert(err.message);
-          webrtc_passo2();
-        });
-      });
-    }
-    return roomId;
-  },
-  join: function (roomId, myId, canal) {
-    if (canal == 'texto') {
-      webrtc.peer = new Peer(myId, peerOpts);
-      var conn = webrtc.peer.connect(roomId, { label: myId });
-      conn.on('error', function (err) {
-        errcompat('texto.join.conn', err);
-      });
-      conn.on('open', function () {
-        debugger
-        var seq = 1;
-        messager.online();
-        messager.add('O sigilo é muito importante para o CVV, nenhuma mensagem dessa conversa ficará gravada por nós.', 'sys');
-        debugger
-        conn.on('data', function (data) {
-          debugger
-          messager.add(data.msg, 'v', data.seq);
-        });
-        conn.on('close', function () {
-          webrtc_lost()
-        });
-        webrtc.send = function (msg) {
-          debugger
-          if (!msg) return;
-          var data = {
-            seq: seq++,
-            msg: msg
-          };
-          conn.send(data);
-          messager.add(data.msg, 'OP', data.seq);
-        };
-      });
+      }, webrtc.delayJoin);
     } else {
       webrtc_passo1(true, canal === 'video', function (err) {
-        webrtc.peer = new Peer(myId, peerOpts);
-        try_call();
-        function try_call() {
-          var call = webrtc.peer.call(roomId, window.localStream);
-          if (!call) return errcompat('audio.join.call', new Error('erro ao iniciar chamada'));
-          webrtc_passo3(call);
-          webrtc.peer.on('error', function (err) {
-            setTimeout(try_call, 300);
-          });
-        }
+        setTimeout(function () {
+          webrtc.peer = new Peer(myId, peerOpts);
+          try_call();
+          function try_call() {
+            var call = webrtc.peer.call(roomId, window.localStream);
+            if (!call) return setTimeout(try_call, 300);
+            webrtc_passo3(call);
+            webrtc.peer.on('error', function (err) {
+              setTimeout(try_call, 300);
+            });
+            call.on('close', function () {
+              if (webrtc.remote_stream) return webrtc_lost();
+              else setTimeout(try_call, 300);
+            });
+          }
+        }, webrtc.delayJoin);
       });
     }
     return roomId;
@@ -462,10 +473,6 @@ function webrtc_passo3(call) {
   });
 
   window.existingCall = call;
-  call.on('close', function () {
-    if (webrtc.remote_stream) return webrtc_lost();
-    webrtc_passo2();
-  });
 
   qs('#passo1').style.display = 'none';
   qs('#passo3').style.display = 'block';
