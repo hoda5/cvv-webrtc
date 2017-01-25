@@ -295,7 +295,7 @@ var peerOpts = {
 
 window.webrtc = {
   delayCreate: 1,
-  delayJoin: 2000,
+  delayJoin: 5000,
   remote_stream: null,
   tracks: {
     audio: 0,
@@ -314,6 +314,7 @@ window.webrtc = {
           if (conn.label == joinId) {
             var seq = 10000;
             messager.online();
+            messager.add('Você já pode conversar com a Outra Pessoa', 'sys');
             conn.on('data', function (data) {
               debugger
               messager.add(data.msg, 'OP', data.seq);
@@ -520,7 +521,7 @@ window.Messager = function (you) {
       }
 
       var date_div = document.createElement('div');
-      date_div.textContent = who == you ? 'Você' : (you == 'OP' ? 'Voluntário Teste' : 'a outra pessoa');
+      date_div.textContent = who=='sys'?'': who == you ? 'Você' : (you == 'OP' ? 'Voluntário Teste' : 'a outra pessoa');
       li.appendChild(date_div);
 
       var message_div = document.createElement('div');
