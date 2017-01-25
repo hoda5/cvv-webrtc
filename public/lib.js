@@ -295,7 +295,7 @@ var peerOpts = {
 
 window.webrtc = {
   delayCreate: 1,
-  delayJoin: 5000,
+  delayJoin: 300,
   remote_stream: null,
   tracks: {
     audio: 0,
@@ -313,14 +313,13 @@ window.webrtc = {
         webrtc.peer.on('connection', function (conn) {
           if (conn.label == joinId) {
             var seq = 10000;
-            messager.online();
-            messager.add('Você já pode conversar com a Outra Pessoa', 'sys');
+            messager.online('Você já pode conversar com a Outra Pessoa');
             conn.on('data', function (data) {
               debugger
               messager.add(data.msg, 'OP', data.seq);
             });
             conn.on('close', function () {
-              webrtc_lost()
+              webrtc_lost();
             });
             conn.on('error', function (err) {
               errcompat('texto.create.conn', err);
@@ -336,7 +335,10 @@ window.webrtc = {
               messager.add(data.msg, 'v', data.seq);
             };
           }
-          else conn.close();
+          else {
+            errcompat('texto.create.label<>', err);
+            conn.close();
+          }
         });
       }
       else {
@@ -367,8 +369,7 @@ window.webrtc = {
         conn.on('open', function () {
           debugger
           var seq = 1;
-          messager.online();
-          messager.add('O sigilo é muito importante para o CVV, nenhuma mensagem dessa conversa ficará gravada por nós.', 'sys');
+          messager.online('O sigilo é muito importante para o CVV, nenhuma mensagem dessa conversa ficará gravada por nós.');
           debugger
           conn.on('data', function (data) {
             debugger
@@ -497,19 +498,20 @@ window.Messager = function (you) {
     input.value = '';
   }
 
-  return {
-    online: function () {
+  var messager={
+    online: function (msg) {
       var e = qs('#conectando');
       e.parentNode.removeChild(e);
       ul = document.createElement('ul');
       ul.classList.add('chatmessages');
+      messager.add(msg, 'sys')
       qs('.chat').appendChild(ul);
     },
     add: function (message, who, seq) {
       var li = document.createElement('li');
-      li.classList.add(who == you ? 'you' : 'other');
 
       if (who != 'sys') {
+        li.classList.add(who == you ? 'you' : 'other');
         var a_user = document.createElement('a');
         a_user.classList.add('user');
         a_user.setAttribute('href', '#');
@@ -536,6 +538,7 @@ window.Messager = function (you) {
       li.scrollIntoView(true);
     }
   };
+  return messager;
 }
 
 cvv.boot();
