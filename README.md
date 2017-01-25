@@ -12,6 +12,8 @@
 - [x] monitoramento das fila e atendimentos
 - [ ] estatísticas de atendimentos e tipos de chamadas
 - [x] testes automatizados das funcionalidades básicas
+- [ ] reconectar automaticamente quando perder a conexão
+- [ ] sincronizar canais / saltar brancos.
 - [ ] design (as telas atuais não estão responsivas e não foi pensada a experiência de uso)
 - [ ] arquitetura (o código atual é apenas uma montagem do tipo copiar/colar)
 
