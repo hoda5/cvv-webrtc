@@ -60,6 +60,7 @@ module.exports = {
   // domain: 'https://i-cvv-hoda5.firebaseapp.com',
 
   run: function run(report_opts, test, callback) {
+    var verbose_ident='';
     var test_result;
     var report_dir, report_screenshots_dir, report_name, report_index, report_stream, report_browsers, report_level = 0, report_catching = 0;
 
@@ -117,13 +118,13 @@ module.exports = {
           test.apply(this, report_browsers);
         }
         catch (e) {
-          test_result = test_result || e;
+          test_result = e;
           report_error({ persona: '?', verbose: report_opts.verbose }, e);
         }
         callback();
       } catch (error) {
         callback(error);
-        test_result = test_result || error;
+        test_result = error;
       }
       finally {
         endBrowsers(report_browsers);
@@ -183,15 +184,15 @@ module.exports = {
           }).join(', '),
           ')'].join('');
         if (opts.verbose)
-          console.log(str);
-        report_stream.write(str);
+          console.log(verbose_ident+str);
+        report_stream.write(verbose_ident+str);
 
         if (report_level == 1)
           report_stream.write('</h3>');
         var r = code();
         if (verboseResult[opts.commandName]) {
           if (opts.verbose)
-            console.log('  result=', JSON.stringify(r));
+            console.log(verbose_ident+'  result=', JSON.stringify(r));
           report_stream.write(' result=<span class="result">');
           report_stream.write(JSON.stringify(r));
           report_stream.write('<span>');
@@ -203,7 +204,7 @@ module.exports = {
       catch (e) {
         if (report_catching == 0) {
           report_error(opts, e);
-          test_result = test_result || e;
+          test_result = e;
         }
         else throw e;
       }
@@ -248,7 +249,7 @@ module.exports = {
           e.$reported = true;
         }
         catch (e2) {
-          test_result = test_result || e2;
+          test_result = e2;
           console.log(e2)
         }
       throw e;
@@ -262,7 +263,7 @@ module.exports = {
               try {
                 resolve(condition());
               } catch (error) {
-                test_result = test_result || error;
+                test_result = error;
                 reject(error)
               }
             }).run();
@@ -278,6 +279,7 @@ module.exports = {
         "args": [
           "--use-fake-ui-for-media-stream",
           "--use-fake-device-for-media-stream"
+          // "--enable-experimental-extension-apis"
         ]
       };
       var instance = webdriverio.remote(options);
@@ -316,7 +318,14 @@ module.exports = {
             commandName: commandName
           };
           return report_cmd(cmd_opts, arguments, function () {
-            code.call(self, arg1, arg2, arg3, arg4, arg5)
+            var bkp = verbose_ident;
+            verbose_ident = verbose_ident + '  ';
+            try {
+              code.call(self, arg1, arg2, arg3, arg4, arg5)
+            }
+            finally {
+              verbose_ident = bkp;
+            }
           });
         };
       };
@@ -422,7 +431,7 @@ module.exports = {
         if (!audio) self.click('[for="checkbox-audio"]');
         if (!video) self.click('[for="checkbox-video"]');
 
-        self.waitUntil(function(){
+        self.waitUntil(function () {
           return self.isEnabled('#btnDisponibilizar');
         }, 30000, '#btnDisponibilizar deveria estar habilitado, verifique permissoes de microfone/camera');
         self.click('#btnDisponibilizar');
@@ -464,7 +473,7 @@ module.exports = {
         var o = {};
         var n = ['.', who, ' .message.seq', seq].join('');
         o[n] = texto;
-        this.wait_text(o);
+        this.wait_text(o, 3000);
       });
 
       return instance;
