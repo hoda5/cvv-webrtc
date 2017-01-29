@@ -299,7 +299,7 @@ window.webrtc = {
   },
   join: function (roomId, myId, canal) {
     if (canal == 'texto') webrtc.joinChat(roomId, myId);
-    else webrtc.answerCall(roomId, myId, canal == 'video');
+    else webrtc.joinCall(roomId, myId, canal == 'video');
     return roomId;
   },
   createChat: function (roomId, joinId, callback) {
@@ -412,6 +412,7 @@ window.webrtc = {
     }
   },
   createCall: function (roomId, joinId, video, callback) {
+    debugger
     webrtc.peer = new Peer(roomId, peerOpts);
     webrtc_passo1(true, video, function () {
       setTimeout(callback, 1);
@@ -419,16 +420,16 @@ window.webrtc = {
         call.answer(window.localStream);
         webrtc_passo3(call);
         call.on('error', function (err) {
-          console.log('createCall call.error', roomId, ' ', myId, err);
+          console.log('createCall call.error', roomId, ' ', joinId, err);
           reconnect(err);
         });
         call.on('close', function (err) {
-          console.log('createCall call.close', roomId, ' ', myId);
+          console.log('createCall call.close', roomId, ' ', joinId);
           reconnect('closed');
         });
       });
       webrtc.peer.on('error', function (err) {
-        console.log('createCall peer.error', roomId, ' ', myId, err);
+        console.log('createCall peer.error', roomId, ' ', joinId, err);
         reconnect(err);
       });
     });
@@ -439,8 +440,9 @@ window.webrtc = {
       }, 50);
     }
   },
-  joinCall: function (roomId, myId, canal) {
-    webrtc_passo1(true, canal === 'video', function (err) {
+  joinCall: function (roomId, myId, video) {
+    debugger
+    webrtc_passo1(true, video, function (err) {
       webrtc.peer = new Peer(myId, peerOpts);
       try_call();
       function try_call() {
